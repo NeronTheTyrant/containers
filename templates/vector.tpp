@@ -2,6 +2,7 @@
 # define VECTOR_TPP
 
 #include <iterator>
+#include "reverse_iterator.tpp"
 
 template <typename T, class A = std::allocator<T> >
 class vector {
@@ -120,15 +121,62 @@ class vector {
 		/************** Constructors / Destructors *****************/
 		explicit vector (allocator_type const & alloc = allocator_type())
 			: _array(NULL), _capacity(0), _size(0), _alloc(alloc) {};
+		
 		explicit vector (size_type n, value_type const & val = value_type(), 
 			allocator_type const & alloc = allocator_type())
 			: _array(NULL), _capacity(n), _size(n), _alloc(alloc) {
-				_array = _alloc.allocate(n);
-				for (size_type i = 0; i < n; i++)
-					_alloc.construct(_array + i, val);
-			};
+			_array = _alloc.allocate(n);
+			for (size_type i = 0; i < n; i++)
+				_alloc.construct(_array + i, val);
+		};
 
+	template <class InputIterator>
+		vector (InputIterator first, InputIterator last,
+			allocator_type const & alloc = allocator_type())
+			: _array(NULL), _capacity(0), _size(0), _alloc(alloc) {
+			_size = std::distance(first, last);
+			_capacity = _size;
+			_array = _alloc.allocate(_size);
+			for (size_type i = 0; i < _size; i++)
+			{
+				_alloc.construct(_array + i, *first);
+				first++;
+			}
+		};
 
+		vector (vector const & x)
+			: _array(NULL), _size(x._size), _capacity(x._capacity), _alloc(x._alloc) {
+			_array = _alloc.allocate(_capacity);
+			for (size_type i = 0; i < _size; i++)
+				_alloc.construct(_array + i, x._array[i]);
+		};
+
+		~vector () {
+			this->clear();
+			_alloc.deallocate(_array, _capacity);
+		};
+
+		vector & operator= (vector const & x) {
+			if (this == &x)
+				return *this;
+			this->clear();
+			_alloc.deallocate(_array, _capacity);
+			_size = x._size;
+			_capacity = x._capacity;
+			_array = _alloc.allocate(_capacity);
+			for (size_type i; i < _size; i++)
+				_alloc.construct(_array + i, x._array[i];
+			return *this;
+		};
+
+					  iterator begin ()			{return iterator(_array);};
+				const_iterator begin () const	{return const_iterator(_array);} ;
+					  iterator end ()			{return iterator(_array + _size);};
+				const_iterator end () const		{return const_iterator(_array + _size);};
+			  reverse_iterator rbegin ()		{return reverse_iterator(end());};
+		const_reverse_iterator rbegin () const	{return const_reverse_iterator(end);
+			  reverse_iterator rend ()			{return reverse_iterator(begin());};
+		const_reverse_iterator rend () const	{return const_reverse_iterator(begin());};
 };
 
 #endif
