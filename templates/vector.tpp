@@ -3,6 +3,7 @@
 
 #include <iterator>
 #include "reverse_iterator.tpp"
+#include <limits.h>
 
 template <typename T, class A = std::allocator<T> >
 class vector {
@@ -19,9 +20,9 @@ class vector {
 
 	private:
 		/******************** attributes *************************/
-		T *	_array;
-		size_t	_size;
-		size_t	_capacity;
+		value_type *	_array;
+		size_type		_size;
+		size_type		_capacity;
 		allocator_type	_alloc;
 
 	public:
@@ -164,10 +165,12 @@ class vector {
 			_size = x._size;
 			_capacity = x._capacity;
 			_array = _alloc.allocate(_capacity);
-			for (size_type i; i < _size; i++)
+			for (size_type i = 0; i < _size; i++)
 				_alloc.construct(_array + i, x._array[i];
 			return *this;
 		};
+
+		/**************** Iterators ********************/
 
 					  iterator begin ()			{return iterator(_array);};
 				const_iterator begin () const	{return const_iterator(_array);} ;
@@ -177,6 +180,153 @@ class vector {
 		const_reverse_iterator rbegin () const	{return const_reverse_iterator(end);
 			  reverse_iterator rend ()			{return reverse_iterator(begin());};
 		const_reverse_iterator rend () const	{return const_reverse_iterator(begin());};
+
+		/**************** Capacity ********************/
+
+		size_type	size() const		{return _size;};
+		size_type	max_size() const	{return (LONG_MAX / sizeof(value_type)) - 1;};
+		size_type	capacity() const	{return _capacity;};
+		bool		empty() const		{return !(_size);};
+
+		void		resize (size_type n, value_type val = value_type()) {
+			if (n == _size)
+				return;
+			if (n > _capacity)
+				reserve(n);
+			if (n < _size) {
+				for (size_type i = n; n < _size; i++)
+					_alloc.destroy(_array + i);
+			}
+			if (n > _size) {
+				for (size_type i = _size; i < n; i++)
+					_alloc.construct(_array + i, val);
+			}
+			_size = n;
+		}
+
+		void		reserve(size_type n) {
+			if (n <= capacity())
+				return ;
+			value_type *	_temp;
+			_temp = _alloc.allocate(n);
+			for (size_type i = 0; i < _size; i++)
+				_alloc.construct(_temp + i, _array[i]);
+			this->clear();
+			_alloc.deallocate(_array, _capacity);
+			_array = _temp;
+			_capacity = n;
+		}
+
+		/**************** Element Access ********************/
+
+			  reference	operator[] (size_type n) {return _array[n];};
+		const_reference	operator[] (size_type n) const {return _array[n];}
+			  reference	at (size_type n) {
+					if (n >= _size)
+						throw std::out_of_range();
+					return _array[n];
+				};
+		const_reference	at (size_type n) const {
+					if (n >= _size)
+						throw std::out_of_range();
+					return _array[n];
+				};
+			  reference	front()			{return _array[0];};
+		const_reference	front() const	{return _array[0];};
+			  reference	back()			{return *rbegin();};
+		const_reference	back() const	{return *rbegin();};
+
+		/**************** Modifiers ********************/
+	template <class InputIterator>
+		void	assign (InputIterator first, InputIterator last) {
+			clear();
+			size_type n = std::distance(first, last);
+			if (n > _capacity)
+				reserve(n);
+			for (size_type i = 0; i < n; i++) {
+				_alloc.construct(_array + i, *first);
+				first++;
+			}
+			_size = n;
+		}
+
+		void	assign (size_type n, value_type const & val) {
+			clear();
+			if (n > _capacity)
+				reserve(n);
+			for (size_type i = 0; i < n; i++)
+				_alloc.construct(_array + i, val);
+			_size = n;
+		}
+
+		void	push_back (value_type const & val) {
+			if (_size == _capacity)
+				reserve(_capacity * 2);
+			_alloc.construct(_array + _size, val);
+			_size += 1;
+		}
+
+		void	pop_back () {
+			_alloc.destroy(_array + (_size - 1));
+		}
+
+		iterator	insert (iterator position, value_type const & val) { //single Element
+			size_type	dist = std::distance(_array, position);
+			if (_size == _capacity) {
+				reserve((_capacity ? _capacity * 2 : 1));
+				position = begin() + dist;
+			}
+			if (position != end()) {
+				for (iterator it = end() - 1; it != position; it--) {
+					_alloc.construct((it + 1).ptr(), *it);
+					_alloc.destroy(it.ptr());
+				}
+			}
+			_alloc.construct((position).ptr(), val);
+			return (position);
+		}
+
+		void	insert (iterator position, size_type n, value_type const & val) {
+			size_type	dist = std::distance(_array, position);
+			if (_size + n > _capacity) {
+				size_type newcap = (_capacity ? _capacity * 2 : 1);
+				while (_size + n > newcap)
+					newcap *= 2;
+				reserve(newcap);
+				position = begin() + dist;
+			}
+			if (position != end()) {
+				for (iterator it = end() - 1; it != position; it--) {
+					_alloc.construct((it + n).ptr(), *it);
+					_alloc.destroy(it.ptr());
+				}
+			}
+			for (size_type i = dist; i < n; i++)
+				_alloc.construct((position + i).ptr(), val);
+		}
+
+	template <class InputIterator>
+		void	insert (iterator position, InputIterator first, InputIterator last) {
+			size_type	dist = std::distance(_array, position);
+			size_type	count = std::distance(first, last);
+			if (_size + count > _capacity) {
+				size_type newcap = (_capacity ? _capacity * 2 : 1);
+				while (_size + count > newcap)
+					newcap *= 2;
+				reserve(newcap);
+				position = begin() + dist;
+			}
+			if (position != end()) {
+				for (iterator it = end() - 1; it != position; it--) {
+					_alloc.construct((it + count).ptr(), *it);
+					_alloc.destroy(it.ptr());
+				}
+			}
+			for (size_type i = dist; i < count; i++) {
+				_alloc.construct((position + i).ptr(), first);
+				first++;
+			}
+		}
 };
 
 #endif
