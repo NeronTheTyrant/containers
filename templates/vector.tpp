@@ -283,6 +283,7 @@ class vector {
 				}
 			}
 			_alloc.construct((position).ptr(), val);
+			_size++;
 			return (position);
 		}
 
@@ -303,6 +304,7 @@ class vector {
 			}
 			for (size_type i = dist; i < n; i++)
 				_alloc.construct((position + i).ptr(), val);
+			_size += n;
 		}
 
 	template <class InputIterator>
@@ -322,11 +324,65 @@ class vector {
 					_alloc.destroy(it.ptr());
 				}
 			}
-			for (size_type i = dist; i < count; i++) {
-				_alloc.construct((position + i).ptr(), first);
-				first++;
-			}
+			for (size_type i = dist; i < count; i++)
+				_alloc.construct((position + i).ptr(), *(first + i));
+			_size += count;
 		}
+
+		iterator	erase (iterator position) {
+			_alloc.destroy(position.ptr());
+			size_type dist = std::distance(begin(), position);
+			iterator ite = end();
+			for (iterator it = position + 1; it != ite; it++) {
+				_alloc.construct((it - 1).ptr(), *it);
+				_alloc.destroy(it.ptr());
+			}
+			_size -= 1;
+			return (position);
+		}
+
+		iterator	erase (iterator first, iterator last) {
+			size_type dist = std::distance(begin(), first);
+			size_type count = std::distance(first, last);
+			for (iterator it = first; it != last; it++)
+				_alloc.destroy(it.ptr());
+			iterator ite = end();
+			for (iterator it = last + 1; it != ite; it++) {
+				_alloc.construct((it - count).ptr(), *it);
+				_alloc.destroy(it.ptr());
+			}
+			_size -= count;
+			return (first);
+		}
+
+		void	swap (vector & x) {
+			pointer	tmp_arr = _array;
+			size_type	tmp_size = _size;
+			size_type	tmp_cap = _capacity;
+			allocator_type	tmp_alloc = _alloc;
+
+			_array = x._array;
+			_size = x._size;
+			_capacity = x._capacity;
+			_alloc = x._alloc;
+
+			x._array = tmp_arr;
+			x._size = tmp_size;
+			x._capacity = tmp_cap;
+			x._alloc = tmp_alloc;
+		}
+
+		void	clear () {
+		iterator ite = end();
+		for (iterator it = begin(); it != ite; it++)
+			_alloc.destroy(it.ptr());
+		_size = 0;
+		}
+
+		allocator_type	get_allocator () const {return _alloc;};
+
+
+
 };
 
 #endif
