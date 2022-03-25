@@ -289,11 +289,11 @@ class vector {
 
 		void	insert (iterator position, size_type n, value_type const & val) {
 			size_type	dist = std::distance(_array, position);
-			if (_size + n > _capacity) {
-				size_type newcap = (_capacity ? _capacity * 2 : 1);
-				while (_size + n > newcap)
-					newcap *= 2;
-				reserve(newcap);
+			if (n > _capacity - _size) {
+				if (n <= (_capacity * 2) - _size)
+					reserve(_capacity * 2);
+				else
+					reserve(_size + n);
 				position = begin() + dist;
 			}
 			if (position != end()) {
@@ -311,11 +311,11 @@ class vector {
 		void	insert (iterator position, InputIterator first, InputIterator last) {
 			size_type	dist = std::distance(_array, position);
 			size_type	count = std::distance(first, last);
-			if (_size + count > _capacity) {
-				size_type newcap = (_capacity ? _capacity * 2 : 1);
-				while (_size + count > newcap)
-					newcap *= 2;
-				reserve(newcap);
+			if (count > _capacity - _size) {
+				if (count <= (_capacity * 2) - _size)
+					reserve(_capacity * 2);
+				else
+					reserve(_size + count);
 				position = begin() + dist;
 			}
 			if (position != end()) {
