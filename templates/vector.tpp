@@ -3,6 +3,8 @@
 
 #include <iterator>
 #include "reverse_iterator.tpp"
+#include "equal.hpp"
+#include "lexicographical_compare.hpp"
 #include <limits.h>
 
 template <typename T, class A = std::allocator<T> >
@@ -184,7 +186,7 @@ class vector {
 		/**************** Capacity ********************/
 
 		size_type	size() const		{return _size;};
-		size_type	max_size() const	{return (LONG_MAX / sizeof(value_type)) - 1;};
+		size_type	max_size() const	{return _alloc.max_size;};
 		size_type	capacity() const	{return _capacity;};
 		bool		empty() const		{return !(_size);};
 
@@ -380,9 +382,41 @@ class vector {
 		}
 
 		allocator_type	get_allocator () const {return _alloc;};
-
-
-
 };
+
+template <class T, class Alloc>
+bool operator== (vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
+	return equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+template <class T, class Alloc>
+bool operator!= (vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
+	return !(lhs == rhs);
+}
+
+template <class T, class Alloc>
+bool operator< (vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
+	return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <class T, class Alloc>
+bool operator<= (vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
+	return !(rhs < lhs);
+}
+
+template <class T, class Alloc>
+bool operator> (vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
+	return rhs < lhs;
+}
+
+template <class T, class Alloc>
+bool operator>= (vector<T, Alloc> const & lhs, vector<T, Alloc> const & rhs) {
+	return !(lhs < rhs);
+}
+
+template <class T, class Alloc>
+void swap (vector<T, Alloc> & x, vector<T, Alloc> & y) {
+	x.swap(y);
+}
 
 #endif
