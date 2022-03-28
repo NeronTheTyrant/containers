@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   enable_if.hpp                                      :+:      :+:    :+:   */
+/*   ft_algorithm.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/28 17:51:40 by mlebard           #+#    #+#             */
-/*   Updated: 2022/03/28 17:51:43 by mlebard          ###   ########.fr       */
+/*   Created: 2022/03/28 18:27:05 by mlebard           #+#    #+#             */
+/*   Updated: 2022/03/28 18:29:02 by mlebard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ENABLE_IF_HPP
-# define ENABLE_IF_HPP
+#ifndef FT_ALGORITHM_HPP
+# define FT_ALGORITHM_HPP
 
-namespace ft {
+# include "enable_if.hpp"
+# include "equal.hpp"
+# include "iterator_traits.hpp"
+# include "lexicographical_compare.hpp"
+# include "make_pair.hpp"
+# include "pair.hpp"
+# include "reverse_iterator.hpp"
 
-template <bool Cond, class T = void>
-struct enable_if {};
-
-template <class T>
-struct enable_if<true, T> {
-	typedef T	type;
-};
-
-};
 #endif

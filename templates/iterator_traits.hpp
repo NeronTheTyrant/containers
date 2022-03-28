@@ -1,3 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   iterator_traits.hpp                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/28 18:00:42 by mlebard           #+#    #+#             */
+/*   Updated: 2022/03/28 18:00:47 by mlebard          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef ITERATOR_TRAITS_HPP
+# define ITERATOR_TRAITS_HPP
+#include <iterator>
+
+namespace ft {
+
 template <class Iterator>
 class iterator_traits {
 	public:
@@ -6,7 +24,7 @@ class iterator_traits {
 		typedef typename Iterator::pointer				pointer;
 		typedef typename Iterator::reference			reference;
 		typedef typename Iterator::iterator_category	iterator_category;
-}
+};
 
 template <class T>
 class iterator_traits<T*> {
@@ -16,7 +34,7 @@ class iterator_traits<T*> {
 		typedef T*									pointer;
 		typedef T&									reference;
 		typedef std::random_access_iterator_tag		iterator_category;
-}
+};
 
 template <class T>
 class iterator_traits<const T*> {
@@ -26,4 +44,8 @@ class iterator_traits<const T*> {
 		typedef const T*									pointer;
 		typedef const T&									reference;
 		typedef std::random_access_iterator_tag		iterator_category;
-}
+};
+
+};
+
+#endif

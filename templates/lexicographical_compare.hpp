@@ -1,3 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexicographical_compare.hpp                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/28 18:01:00 by mlebard           #+#    #+#             */
+/*   Updated: 2022/03/28 18:01:37 by mlebard          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef LEXICOGRAPHICAL_COMPARE_HPP
+# define LEXICOGRAPHICAL_COMPARE_HPP
+
+namespace ft {
+
 template <class InputIterator1, class InputIterator2>
 bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
 							InputIterator2 first2, InputIterator2 last2) {
@@ -30,3 +47,7 @@ bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
 	}
 	return (first2 != last2);
 }
+
+};
+
+#endif

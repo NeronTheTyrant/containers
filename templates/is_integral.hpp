@@ -1,3 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   is_integral.hpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/28 17:52:37 by mlebard           #+#    #+#             */
+/*   Updated: 2022/03/28 17:53:17 by mlebard          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef IS_INTEGRAL_HPP
+# define IS_INTEGRAL_HPP
+
+namespace ft {
+
 template <typename>
 struct is_integral_base						{ static bool const value = false;};
 
@@ -45,3 +62,7 @@ struct is_integral_base<unsigned long long>	{ static bool const value = true;};
 
 template <class T>
 struct is_integral : is_integral_base<T> {};
+
+};
+
+#endif

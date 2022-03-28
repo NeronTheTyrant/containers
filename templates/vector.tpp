@@ -1,13 +1,17 @@
+
 #ifndef VECTOR_TPP
 # define VECTOR_TPP
 
 #include <iterator>
-#include "reverse_iterator.tpp"
+#include "reverse_iterator.hpp"
 #include "equal.hpp"
 #include "lexicographical_compare.hpp"
 #include <limits.h>
+#include <stdexcept>
 
-template <typename T, class A = std::allocator<T> >
+namespace ft {
+
+template <class T, class A = std::allocator<T> >
 class vector {
 	public:
 		/******************** typedefs *************************/
@@ -49,7 +53,7 @@ class vector {
 				~iterator	() {};
 
 				/************** Operator Overloads *****************/
-				iterator &	operator=	(iterator const & rhs)	{_ptr = rhs._ptr;};
+				iterator &	operator=	(iterator const & rhs)	{_ptr = rhs._ptr; return *this;};
 				bool		operator==	(iterator const & rhs)	{return _ptr == rhs._ptr ? true : false;};
 				bool		operator!=	(iterator const & rhs)	{return !operator==(rhs);};
 				bool		operator<	(iterator const & rhs)	{return _ptr < rhs._ptr ? true : false;};
@@ -62,7 +66,7 @@ class vector {
 				iterator &	operator--	()				{--_ptr; return *this;};
 				iterator	operator--	(int)			{return iterator(_ptr - 1);};
 				iterator	operator+	(size_type n)	{return iterator(_ptr + n);};
-				friend iterator operator+ (size_type n, iterator const & rhs);
+	//			friend iterator operator+ (size_type n, iterator const & rhs);
 				iterator &	operator+=	(size_type n)	{_ptr += n; return *this;};
 				iterator	operator-	(size_type n)	{return iterator(_ptr - n);};
 				iterator &	operator-=	(size_type n)	{_ptr -= n; return *this;};
@@ -79,10 +83,10 @@ class vector {
 		class const_iterator {
 			public:
 				/******************** typedefs *************************/
-				typedef typename const A::value_type	value_type;
+				typedef typename A::value_type const	value_type;
 				typedef typename A::difference_type		difference_type;
-				typedef typename const A::reference		reference;
-				typedef typename const A::pointer		pointer;
+				typedef typename A::reference const		reference;
+				typedef typename A::pointer const		pointer;
 				typedef std::random_access_iterator_tag	iterator_category;
 
 			private:
@@ -91,13 +95,13 @@ class vector {
 			public:
 				/************** Constructors / Destructors *****************/
 				const_iterator	() : _ptr(NULL) {};
-				const_iterator	(const_iterator const & copy) _ptr(copy._rhs) {};
+				const_iterator	(const_iterator const & copy) : _ptr(copy._rhs) {};
 				const_iterator	(iterator const & copy) : _ptr(copy.ptr()) {};
 				const_iterator	(value_type * ptr) : _ptr(ptr) {};
 				~const_iterator	() {};
 
 				/************** Operator Overloads *****************/
-				const_iterator &	operator=	(const_iterator const & rhs)	{_ptr = rhs._ptr;};
+				const_iterator &	operator=	(const_iterator const & rhs)	{_ptr = rhs._ptr; return *this;};
 				bool				operator==	(const_iterator const & rhs)	{return _ptr == rhs._ptr ? true : false;};
 				bool				operator!=	(const_iterator const & rhs)	{return !operator==(rhs);};
 				bool				operator<	(const_iterator const & rhs)	{return _ptr < rhs._ptr ? true : false;};
@@ -168,18 +172,21 @@ class vector {
 			_capacity = x._capacity;
 			_array = _alloc.allocate(_capacity);
 			for (size_type i = 0; i < _size; i++)
-				_alloc.construct(_array + i, x._array[i];
+				_alloc.construct(_array + i, x._array[i]);
 			return *this;
 		};
 
 		/**************** Iterators ********************/
+
+		typedef ft::reverse_iterator<iterator>			reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 					  iterator begin ()			{return iterator(_array);};
 				const_iterator begin () const	{return const_iterator(_array);} ;
 					  iterator end ()			{return iterator(_array + _size);};
 				const_iterator end () const		{return const_iterator(_array + _size);};
 			  reverse_iterator rbegin ()		{return reverse_iterator(end());};
-		const_reverse_iterator rbegin () const	{return const_reverse_iterator(end);
+		const_reverse_iterator rbegin () const	{return const_reverse_iterator(end)};
 			  reverse_iterator rend ()			{return reverse_iterator(begin());};
 		const_reverse_iterator rend () const	{return const_reverse_iterator(begin());};
 
@@ -418,5 +425,7 @@ template <class T, class Alloc>
 void swap (vector<T, Alloc> & x, vector<T, Alloc> & y) {
 	x.swap(y);
 }
+
+};
 
 #endif

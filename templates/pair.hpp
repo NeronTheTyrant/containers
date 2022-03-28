@@ -1,3 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pair.hpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/28 18:05:34 by mlebard           #+#    #+#             */
+/*   Updated: 2022/03/28 18:05:54 by mlebard          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef PAIR_HPP
+# define PAIR_HPP
+
+namespace ft {
+
 template <class T1, class T2>
 struct pair {
 	public:
@@ -37,11 +54,6 @@ bool operator< (pair<T1, T2> const & lhs, pair<T1, T2> const & rhs) {
 }
 
 template <class T1, class T2>
-bool operator< (pair<T1, T2> const & lhs, pair<T1, T2> const & rhs) {
-	return lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
-}
-
-template <class T1, class T2>
 bool operator<= (pair<T1, T2> const & lhs, pair<T1, T2> const & rhs) {
 	return !(rhs < lhs);
 }
@@ -55,3 +67,7 @@ template <class T1, class T2>
 bool operator>= (pair<T1, T2> const & lhs, pair<T1, T2> const & rhs) {
 	return !(lhs < rhs);
 }
+
+};
+
+#endif
