@@ -6,7 +6,7 @@
 /*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 18:06:43 by mlebard           #+#    #+#             */
-/*   Updated: 2022/03/28 18:15:40 by mlebard          ###   ########.fr       */
+/*   Updated: 2022/03/28 23:27:32 by mlebard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class reverse_iterator {
 		iterator_type base () const {return _base;};
 
 		/********* Operator Overloads ***********/
-		reference			operator*	() const					{return *(_base - 1);};
+		reference			operator*	() const					{iterator_type tmp(_base - 1); return *tmp;};
 		reverse_iterator	operator+	(difference_type n) const	{return reverse_iterator(_base - n);};
 		reverse_iterator &	operator++	()							{_base--; return *this;};
 		reverse_iterator	operator++	(int)						{reverse_iterator temp = *this; ++(*this); return temp;};

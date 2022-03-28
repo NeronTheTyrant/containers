@@ -61,20 +61,20 @@ class vector {
 				bool		operator<=	(iterator const & rhs)	{return operator==(rhs) || operator<(rhs);};
 				bool		operator>=	(iterator const & rhs)	{return operator==(rhs) || operator>(rhs);};
 
-				iterator &	operator++	()				{++_ptr; return *this;};
-				iterator	operator++	(int)			{return iterator(_ptr + 1);};
-				iterator &	operator--	()				{--_ptr; return *this;};
-				iterator	operator--	(int)			{return iterator(_ptr - 1);};
-				iterator	operator+	(size_type n)	{return iterator(_ptr + n);};
+				iterator &	operator++	()					{++_ptr; return *this;};
+				iterator	operator++	(int)				{iterator tmp(*this); ++(*this); return tmp;};
+				iterator &	operator--	()					{--_ptr; return *this;};
+				iterator	operator--	(int)				{iterator tmp(*this); --(*this); return tmp;};
+				iterator	operator+	(size_type n) const	{return iterator(_ptr + n);};
 	//			friend iterator operator+ (size_type n, iterator const & rhs);
-				iterator &	operator+=	(size_type n)	{_ptr += n; return *this;};
-				iterator	operator-	(size_type n)	{return iterator(_ptr - n);};
-				iterator &	operator-=	(size_type n)	{_ptr -= n; return *this;};
-				difference_type operator- (iterator const & rhs) {return (_ptr - rhs._ptr);};
+				iterator &	operator+=	(size_type n)		{_ptr += n; return *this;};
+				iterator	operator-	(size_type n) const	{return iterator(_ptr - n);};
+				iterator &	operator-=	(size_type n)		{_ptr -= n; return *this;};
+				difference_type operator- (iterator const & rhs) const {return (_ptr - rhs._ptr);};
 
-				reference	operator*	()				{return	*_ptr;};
-				pointer		operator->	()				{return _ptr;};
-				reference	operator[]	(size_type n)	{return *(_ptr + n);};
+				reference	operator*	()					{return	*_ptr;};
+				pointer		operator->	()					{return _ptr;};
+				reference	operator[]	(size_type n)		{return *(_ptr + n);};
 				
 				/************** Member functions *****************/
 				value_type *	ptr () {return _ptr;};
@@ -110,15 +110,16 @@ class vector {
 				bool				operator>=	(const_iterator const & rhs)	{return operator==(rhs) || operator>(rhs);};
 
 				const_iterator &	operator++	()							{++_ptr; return *this;};
-				const_iterator		operator++	(int)						{return const_iterator(_ptr + 1);};
+				const_iterator		operator++	(int)						{const_iterator tmp(*this); ++(*this); return tmp;};
 				const_iterator &	operator--	()							{--_ptr; return *this;};
-				const_iterator		operator--	(int)						{return const_iterator(_ptr - 1);};
-				const_iterator		operator+	(size_type n)				{return const_iterator(_ptr + n);};
+				const_iterator		operator--	(int)						{const_iterator tmp(*this); --(*this); return tmp;};
+
+				const_iterator		operator+	(size_type n) const					{return const_iterator(_ptr + n);};
 				friend const_iterator operator+ (size_type n, const_iterator const & rhs);
-				const_iterator &	operator+=	(size_type n)				{_ptr += n; return *this;};
-				const_iterator		operator-	(size_type n)				{return const_iterator(_ptr - n);};
-				const_iterator &	operator-=	(size_type n)				{_ptr -= n; return *this;};
-				difference_type		operator- (const_iterator const & rhs)	{return (_ptr - rhs._ptr);};
+				const_iterator &	operator+=	(size_type n)						{_ptr += n; return *this;};
+				const_iterator		operator-	(size_type n) const					{return const_iterator(_ptr - n);};
+				const_iterator &	operator-=	(size_type n)						{_ptr -= n; return *this;};
+				difference_type		operator- (const_iterator const & rhs) const	{return (_ptr - rhs._ptr);};
 
 				reference	operator*	()									{return	*_ptr;};
 				pointer		operator->	()									{return _ptr;};
@@ -127,11 +128,11 @@ class vector {
 
 		/************** Constructors / Destructors *****************/
 		explicit vector (allocator_type const & alloc = allocator_type())
-			: _array(NULL), _capacity(0), _size(0), _alloc(alloc) {};
-		
+			: _array(NULL), _size(0), _capacity(0), _alloc(alloc) {};
+
 		explicit vector (size_type n, value_type const & val = value_type(), 
 			allocator_type const & alloc = allocator_type())
-			: _array(NULL), _capacity(n), _size(n), _alloc(alloc) {
+			: _array(NULL), _size(n), _capacity(n), _alloc(alloc) {
 			_array = _alloc.allocate(n);
 			for (size_type i = 0; i < n; i++)
 				_alloc.construct(_array + i, val);
@@ -140,7 +141,7 @@ class vector {
 	template <class InputIterator>
 		vector (InputIterator first, InputIterator last,
 			allocator_type const & alloc = allocator_type())
-			: _array(NULL), _capacity(0), _size(0), _alloc(alloc) {
+			: _array(NULL), _size(0), _capacity(0), _alloc(alloc) {
 			_size = std::distance(first, last);
 			_capacity = _size;
 			_array = _alloc.allocate(_size);
@@ -186,7 +187,7 @@ class vector {
 					  iterator end ()			{return iterator(_array + _size);};
 				const_iterator end () const		{return const_iterator(_array + _size);};
 			  reverse_iterator rbegin ()		{return reverse_iterator(end());};
-		const_reverse_iterator rbegin () const	{return const_reverse_iterator(end)};
+		const_reverse_iterator rbegin () const	{return const_reverse_iterator(end);};
 			  reverse_iterator rend ()			{return reverse_iterator(begin());};
 		const_reverse_iterator rend () const	{return const_reverse_iterator(begin());};
 
@@ -220,10 +221,12 @@ class vector {
 			_temp = _alloc.allocate(n);
 			for (size_type i = 0; i < _size; i++)
 				_alloc.construct(_temp + i, _array[i]);
+			size_type size_temp = _size;
 			this->clear();
 			_alloc.deallocate(_array, _capacity);
 			_array = _temp;
 			_capacity = n;
+			_size = size_temp;
 		}
 
 		/**************** Element Access ********************/
@@ -232,12 +235,12 @@ class vector {
 		const_reference	operator[] (size_type n) const {return _array[n];}
 			  reference	at (size_type n) {
 					if (n >= _size)
-						throw std::out_of_range();
+						throw std::out_of_range("vector::out_of_range");
 					return _array[n];
 				};
 		const_reference	at (size_type n) const {
 					if (n >= _size)
-						throw std::out_of_range();
+						throw std::out_of_range("vector::out_of_range");
 					return _array[n];
 				};
 			  reference	front()			{return _array[0];};
@@ -270,13 +273,16 @@ class vector {
 
 		void	push_back (value_type const & val) {
 			if (_size == _capacity)
-				reserve(_capacity * 2);
+				reserve((_capacity ? _capacity * 2 : 1));
 			_alloc.construct(_array + _size, val);
-			_size += 1;
+			_size++;
 		}
 
 		void	pop_back () {
-			_alloc.destroy(_array + (_size - 1));
+			if (_size) {
+				_alloc.destroy(_array + (_size - 1));
+				_size -= 1;
+			}
 		}
 
 		iterator	insert (iterator position, value_type const & val) { //single Element
