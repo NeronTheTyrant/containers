@@ -20,6 +20,12 @@ int	main (void)
 	}
 	std::cout << v.back() << std::endl;
 	std::cout << v.front() << std::endl;
+	ft::vector<int> vect(150, 100);
+	ft::vector<int> vector(v.begin(), v.end());
 	ft::vector<int>::iterator it;
-
+	for (it = vect.begin(); it != vect.end(); it++)
+		std::cout << *it << ", " << std::endl;
+	std::cout << "BREAK BREAK" << std::endl;
+	for (it = vector.begin(); it != vector.end(); it++)
+		std::cout << *it << ", " << std::endl;
 }

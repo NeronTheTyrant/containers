@@ -6,6 +6,8 @@
 #include "reverse_iterator.hpp"
 #include "equal.hpp"
 #include "lexicographical_compare.hpp"
+#include "enable_if.hpp"
+#include "is_integral.hpp"
 #include <limits.h>
 #include <stdexcept>
 
@@ -115,7 +117,7 @@ class vector {
 				const_iterator		operator--	(int)						{const_iterator tmp(*this); --(*this); return tmp;};
 
 				const_iterator		operator+	(size_type n) const					{return const_iterator(_ptr + n);};
-				friend const_iterator operator+ (size_type n, const_iterator const & rhs);
+		//		friend const_iterator operator+ (size_type n, const_iterator const & rhs);
 				const_iterator &	operator+=	(size_type n)						{_ptr += n; return *this;};
 				const_iterator		operator-	(size_type n) const					{return const_iterator(_ptr - n);};
 				const_iterator &	operator-=	(size_type n)						{_ptr -= n; return *this;};
@@ -138,7 +140,7 @@ class vector {
 				_alloc.construct(_array + i, val);
 		};
 
-	template <class InputIterator>
+	template <class InputIterator, class = typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type>
 		vector (InputIterator first, InputIterator last,
 			allocator_type const & alloc = allocator_type())
 			: _array(NULL), _size(0), _capacity(0), _alloc(alloc) {
@@ -249,7 +251,7 @@ class vector {
 		const_reference	back() const	{return *rbegin();};
 
 		/**************** Modifiers ********************/
-	template <class InputIterator>
+	template <class InputIterator, class = typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type>
 		void	assign (InputIterator first, InputIterator last) {
 			clear();
 			size_type n = std::distance(first, last);
@@ -322,7 +324,7 @@ class vector {
 			_size += n;
 		}
 
-	template <class InputIterator>
+	template <class InputIterator, class = typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type>
 		void	insert (iterator position, InputIterator first, InputIterator last) {
 			size_type	dist = std::distance(_array, position);
 			size_type	count = std::distance(first, last);
