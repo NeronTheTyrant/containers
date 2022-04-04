@@ -1,10 +1,12 @@
 #ifndef RBTREE_HPP
 # define RBTREE_HPP
-
+#include "../temp.hpp"
 namespace ft {
 
 
-template <T>
+
+/*
+template <typename T>
 class Node {
 	public:
 		typedef T	value_type;
@@ -16,7 +18,7 @@ class Node {
 		bool		color; // 0 is black, 1 is red
 
 		Node() : parent(NULL), left(NULL), right(NULL) {};
-		Node(Node const & src) : parent(src.parent), left(src.left), right(right.left), color(src.color) {};
+		Node(Node const & src) : parent(src.parent), left(src.left), right(src.left), color(src.color) {};
 		~Node() {};
 
 		Node &	operator= (Node const & rhs) {
@@ -27,25 +29,24 @@ class Node {
 			return *this;
 		};
 };
-
+*/
 template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
 class RBT {
-	protected:
-		#define BLACK	0
-		#define RED		1
+	public:
+		typedef T						value_type;
+		typedef Compare					key_compare;
+		typedef ft::Node<value_type>		Node;
+		typedef Alloc					allocator_type;
+		typedef std::allocator<Node>	node_allocator_type;
 		Node *				root;
 		Node *				sentinel; // leaf
 		allocator_type		alloc;
 		node_allocator_type	nodeAlloc;
 		key_compare			comp;
-
+	protected:
+//		#define BLACK	0
+//		#define RED		1
 	public:
-		typedef T						value_type;
-		typedef Compare					key_compare;
-		typedef Node<value_type>		Node;
-		typedef Alloc					allocator_type;
-		typedef std::allocator<Node>	node_allocator_type;
-
 		RBT(allocator_type const & allocator = allocator_type())
 			: root(NULL), sentinel(NULL), alloc(allocator), nodeAlloc(node_allocator_type()) {
 			initSentinel();
@@ -54,7 +55,7 @@ class RBT {
 
 		void	initSentinel() {
 			sentinel = nodeAlloc.allocate(1);
-			nodeAlloc.construct(sentinel, node());
+			nodeAlloc.construct(sentinel, Node());
 			alloc.construct(&sentinel->data, value_type());
 			sentinel->parent = NULL;
 			sentinel->right = NULL;
@@ -64,7 +65,7 @@ class RBT {
 
 		Node *	newNode (value_type const & val, Node * parent) {
 			Node * tmp = nodeAlloc.allocate(1);
-			nodeAlloc.construct(tmp, node());
+			nodeAlloc.construct(tmp, Node());
 			alloc.construct(&tmp->data, val);
 			tmp->parent = parent;
 			tmp->right = sentinel;
@@ -108,17 +109,17 @@ class RBT {
 
 		void	insertNode(value_type const & val) {
 			Node *	z = newNode(val, sentinel);
-			Node *	y = nullptr;
+			Node *	y = sentinel;
 			Node *	x = root;
 			while (x != sentinel) {
 				y = x;
-				if (comp(z->data, x->data)
+				if (comp(z->data, x->data))
 					x = x->left;
 				else
 					x = x->right;
 			}
 			z->parent = y;
-			if (y == nullptr)
+			if (y == sentinel)
 				root = z;
 			else if (comp(z->data, y->data))
 				y->left = z;
@@ -169,7 +170,7 @@ class RBT {
 				if (z == root)
 					break;
 			}
-			root->color = BLACK //							 case 0
+			root->color = BLACK; //							 case 0
 		};
 
 	void deleteNode(int key) {
@@ -188,7 +189,7 @@ class RBT {
 			}
 		}
 		if (z == sentinel) {
-			cout << "Key not found in the tree" << endl;
+			std::cout << "Key not found in the tree" << std::endl;
 			return;
 		}
 		Node *	y = z;

@@ -4,14 +4,12 @@
 #include "templates/vector.tpp"
 #include <vector>
 #include <map>
+#include "templates/rbtree.hpp"
 int	main (void)
 {
-	std::map<int, int>	map;
-	map.insert(std::make_pair(1, 1));
-	map.insert(std::make_pair(2,2));
-	map.insert(std::make_pair(3,3));
-	std::map<int, int>::iterator ite = map.end();
-	std::cout << "first: " << ite->first << " second: " << ite->second << std::endl;
-	--ite;
-	std::cout << "first: " << ite->first << " second: " << ite->second << std::endl;
+	ft::RBT<int>	rbt;
+	rbt.insertNode(15);
+	rbt.insertNode(13);
+	rbt.insertNode(8);
+	ft::Node<int>::DG_tree(rbt.root);
 }
