@@ -35,13 +35,14 @@ namespace ft {
 			bool		color; // 0 is black, 1 is red
 
 			Node() : parent(NULL), left(NULL), right(NULL) {};
-			Node(Node const & src) : parent(src.parent), left(src.left), right(src.left), color(src.color) {};
+			Node(Node const & src) : parent(src.parent), left(src.left), right(src.left), data(src.data), color(src.color) {};
 			~Node() {};
 
 			Node &	operator= (Node const & rhs) {
 				parent = rhs.parent;
 				left = rhs.left;
 				right = rhs.right;
+				data = rhs.data;
 				color = rhs.color;
 				return *this;
 			};
@@ -254,13 +255,11 @@ namespace ft {
 			int	print_label(t_buf *b, int *printed)
 			{
 				int			ret;
-				std::string	val;
-				val = "bonjour";
 
 				ret = buffer_append_mul(b, E_PAD, tree_dsp.label_delta)
 					|| buffer_append(b, E_PREFIX)
-					|| buffer_append_raw(b, color == 1 ? "\033[31m" : "\033[34m", sizeof("\033[31m") - 1)
-					|| buffer_append_raw(b, val.c_str(), tree_dsp.label_width - WORD_ADDED_WIDTH - tree_dsp.trunc)
+					|| buffer_append_raw(b, color == RED ? "\033[31m" : "\033[34m", sizeof("\033[31m") - 1)
+					|| buffer_append_raw(b, data.to_string().c_str(), tree_dsp.label_width - WORD_ADDED_WIDTH - tree_dsp.trunc)
 					;
 				if (!ret && tree_dsp.trunc)
 					ret = buffer_append(b, E_TRUNC);
@@ -381,12 +380,9 @@ namespace ft {
 
 			void	init_calc()
 			{
-				std::string	val;
-				val = "bonjour";
-				
 				bzero(&tree_dsp, sizeof(t_tree_display));
 				tree_dsp.depth = 1;
-				tree_dsp.label_width = var.size();
+				tree_dsp.label_width = data.to_string().size();
 
 				if (tree_dsp.label_width > MAX_WORD_WIDTH)
 					tree_dsp.trunc = 1;

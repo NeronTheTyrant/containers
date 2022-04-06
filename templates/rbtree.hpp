@@ -38,8 +38,10 @@ class RBT {
 		typedef ft::Node<value_type>		Node;
 		typedef Alloc					allocator_type;
 		typedef std::allocator<Node>	node_allocator_type;
+		typedef Alloc::size_type		size_type;
 		Node *				root;
 		Node *				sentinel; // leaf
+		size_type			size;
 		allocator_type		alloc;
 		node_allocator_type	nodeAlloc;
 		key_compare			comp;
@@ -51,61 +53,37 @@ class RBT {
 			: root(NULL), sentinel(NULL), alloc(allocator), nodeAlloc(node_allocator_type()) {
 			initSentinel();
 			root = sentinel;
+			size = 0;
 		};
 
-		void	initSentinel() {
-			sentinel = nodeAlloc.allocate(1);
-			nodeAlloc.construct(sentinel, Node());
-			alloc.construct(&sentinel->data, value_type());
-			sentinel->parent = NULL;
-			sentinel->right = NULL;
-			sentinel->left = NULL;
-			sentinel->color = BLACK;
-		};
+		RBT (RBT const & src)
+			: root(NULL), sentinel(NULL), alloc(src.allocator), nodeAlloc(src.nodeAlloc), {
+			initSentinel();
+			root = sentinel;
+			size = 0;
+			*this = src;
+		}
 
-		Node *	newNode (value_type const & val, Node * parent) {
-			Node * tmp = nodeAlloc.allocate(1);
-			nodeAlloc.construct(tmp, Node());
-			alloc.construct(&tmp->data, val);
-			tmp->parent = parent;
-			tmp->right = sentinel;
-			tmp->left = sentinel;
-			tmp->color = RED;
-		};
-		
-		void	leftRotate (Node * x) {
-			Node *	y;
-			y = x->right;
-			x->right = y->left;
-			if (y->left != sentinel)
-				y->left->parent = x;
-			y->parent = x->parent;
-			if (x->parent == sentinel)
-				root = y;
-			else if (x == x->parent->left)
-				x->parent->left = y;
-			else
-				x->parent->right = y;
-			y->left = x;
-			x->parent = y;
-		};
+		RBT &	operator= (RBT const & rhs) {
+			clear();
+			iterator ite = rhs.end();
+			for (iterator it = rhs.begin; it != end; it++)
+				insertNode(*it);
+			size = rhs.size;
+			return *this;
+		}
 
-		void	rightRotate (Node * x) {
-			Node *	y;
-			y = x->left;
-			x->left = y->right;
-			if (y->right != sentinel)
-				y->right->parent = x;
-			y->parent = x->parent;
-			if (x->parent == sentinel)
-				root = y;
-			else if (x == x->parent->right)
-				x->parent->right = y;
-			else
-				x->parent->left = y;
-			y->right = x;
-			x->parent = y;
-		};
+		size_type	size() {
+			return this->size;
+		}
+
+		Node *	root() {
+			return this->root;
+		}
+
+		Node *	sentinel() {
+			return this->sentinel;
+		}
 
 		void	insertNode(value_type const & val) {
 			Node *	z = newNode(val, sentinel);
@@ -126,7 +104,125 @@ class RBT {
 			else
 				y->right = z;
 			insertFixup(z);
+			size += 1;
+		}
+
+		Node *	minimum(Node * node) {
+			while (node->left != sentinel)
+				node = node->left;
+			return node;
 		};
+
+		Node *	maximum(Node * node) {
+			while (node->right != sentinel)
+				node = node->right;
+			return node;
+		};
+
+		void deleteNode(value_type key) {
+			Node * z = sentinel;
+			Node * tmp = root;
+			while (tmp != sentinel) {
+				if (tmp->data == key) {
+					z = tmp;
+				}
+				if (tmp->data <= key) {
+					tmp = tmp->right;
+				}
+				else {
+					tmp = tmp->left;
+				}
+			}
+			if (z == sentinel) {
+				std::cout << "Key not found in the tree" << std::endl;
+				return;
+			}
+			Node *	y = z;
+			Node *	x;
+			bool y_color = y->color;
+			if (z->left == sentinel) {
+				x = z->right;
+				transplant(z, z->right);
+			}
+			else if (z->right == sentinel) {
+				x = z->left;
+				transplant(z, z->left);
+			}
+			else {
+				y = minimum(z->right);
+				y_color = y->color;
+				x = y->right;
+				if (y->parent != z) {
+					transplant(y, y->right);
+					y->right = z->right;
+					y->right->parent = y;
+				}
+				transplant(z, y);
+				y->left = z->left;
+				y->left->parent = y;
+				y->color = z->color;
+			}
+			delete z;
+			if (y_color == 0) {
+				deleteFix(x);
+			}
+			size -= 1;
+		}
+
+	private:
+		void	initSentinel() {
+			sentinel = nodeAlloc.allocate(1);
+			nodeAlloc.construct(sentinel, Node());
+			alloc.construct(&sentinel->data, value_type());
+			sentinel->parent = NULL;
+			sentinel->right = NULL;
+			sentinel->left = NULL;
+			sentinel->color = BLACK;
+		}
+
+		Node *	newNode (value_type const & val, Node * parent) {
+			Node * tmp = nodeAlloc.allocate(1);
+			nodeAlloc.construct(tmp, Node());
+			alloc.construct(&tmp->data, val);
+			tmp->parent = parent;
+			tmp->right = sentinel;
+			tmp->left = sentinel;
+			tmp->color = RED;
+		}
+
+		void	leftRotate (Node * x) {
+			Node *	y;
+			y = x->right;
+			x->right = y->left;
+			if (y->left != sentinel)
+				y->left->parent = x;
+			y->parent = x->parent;
+			if (x->parent == sentinel)
+				root = y;
+			else if (x == x->parent->left)
+				x->parent->left = y;
+			else
+				x->parent->right = y;
+			y->left = x;
+			x->parent = y;
+		}
+
+		void	rightRotate (Node * x) {
+			Node *	y;
+			y = x->left;
+			x->left = y->right;
+			if (y->right != sentinel)
+				y->right->parent = x;
+			y->parent = x->parent;
+			if (x->parent == sentinel)
+				root = y;
+			else if (x == x->parent->right)
+				x->parent->right = y;
+			else
+				x->parent->left = y;
+			y->right = x;
+			x->parent = y;
+		}
 
 		void	insertFixup (Node * z) {
 			Node *	uncle;
@@ -171,58 +267,9 @@ class RBT {
 					break;
 			}
 			root->color = BLACK; //							 case 0
-		};
+			ft::Node<value_type>::DG_tree(root);
+		}
 
-	void deleteNode(int key) {
-		Node * z = sentinel;
-		Node * tmp = root;
-		while (tmp != sentinel) {
-			if (tmp->data == key) {
-				z = tmp;
-			}
-
-			if (tmp->data <= key) {
-				tmp = tmp->right;
-			}
-			else {
-				tmp = tmp->left;
-			}
-		}
-		if (z == sentinel) {
-			std::cout << "Key not found in the tree" << std::endl;
-			return;
-		}
-		Node *	y = z;
-		Node *	x;
-		bool y_color = y->color;
-		if (z->left == sentinel) {
-			x = z->right;
-			transplant(z, z->right);
-		}
-		else if (z->right == sentinel) {
-			x = z->left;
-			transplant(z, z->left);
-		}
-		else {
-			y = minimum(z->right);
-			y_color = y->color;
-			x = y->right;
-			if (y->parent != z) {
-				transplant(y, y->right);
-				y->right = z->right;
-				y->right->parent = y;
-			}
-
-			transplant(z, y);
-			y->left = z->left;
-			y->left->parent = y;
-			y->color = z->color;
-		}
-		delete z;
-		if (y_color == 0) {
-		deleteFix(x);
-		}
-	};
 
 	void	transplant(Node * a, Node * b) {
 		if (a->parent == sentinel)
@@ -236,7 +283,7 @@ class RBT {
 
 	void	deleteFix (Node * x) { // Called only when the deleted node was black.
 		Node *	s; // s will be x's sibling
-		while (x != root && x->color == BLACK) {
+		while (x != root && x != sentinel && x->color == BLACK) {
 			if (x == x->parent->left) { // if x is a left child
 				s = x->parent->right;
 				if (s->color == RED) { // CASE 1
@@ -245,7 +292,6 @@ class RBT {
 					leftRotate(x->parent); // rotate parent
 					s = x->parent->right; // assign s to x's new sibling (since x's position changed)
 				}
-
 				if (s->left->color == BLACK && s->right->color == BLACK) { // CASE 2
 					s->color = RED; // sibling is now red
 					x = x->parent; // move pointer to parent
@@ -294,7 +340,8 @@ class RBT {
 				}
 			}
 		}
-		x->color = BLACK; 
+		x->color = BLACK;
+		ft::Node<value_type>::DG_tree(root);
 	};
 };
 

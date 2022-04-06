@@ -1,6 +1,6 @@
 #ifndef MAP_HPP
 # define MAP_HPP
-/*
+
 namespace ft {
 
 template <class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> >
@@ -18,7 +18,7 @@ class map {
 		typedef typename Alloc::const_pointer			const_pointer;
 		typedef typename Alloc::difference_type			difference_type;
 		typedef typename Alloc::size_type				size_type;
-
+	
 	template <class Key, class T, class Compare, class Alloc>
 		class map<Key, T, Compare, Alloc>::value_compare {
 				friend class map;
@@ -33,6 +33,11 @@ class map {
 					return comp(x.first, y.first);
 				}
 		};
-};*/
+	protected:
+		RBT<value_type, value_compare>	rbtree;
+	public:
+		
+
+};
 
 #endif

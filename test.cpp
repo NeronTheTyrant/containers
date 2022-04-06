@@ -7,9 +7,14 @@
 #include "templates/rbtree.hpp"
 int	main (void)
 {
-	ft::RBT<int>	rbt;
-	rbt.insertNode(15);
-	rbt.insertNode(13);
-	rbt.insertNode(8);
-	ft::Node<int>::DG_tree(rbt.root);
+	ft::RBT<ft::pair<int, int> >	rbt;
+	rbt.insertNode(ft::make_pair(15, 32));
+	rbt.insertNode(ft::make_pair(13, 58));
+	rbt.insertNode(ft::make_pair(8, 78));
+	rbt.insertNode(ft::make_pair(58, 32));
+	rbt.insertNode(ft::make_pair(2, 58));
+	rbt.insertNode(ft::make_pair(100, 78));
+
+	rbt.deleteNode(ft::make_pair(13, 58));
+
 }

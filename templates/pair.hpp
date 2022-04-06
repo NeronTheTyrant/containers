@@ -12,6 +12,9 @@
 
 #ifndef PAIR_HPP
 # define PAIR_HPP
+#ifdef FT_DEBUG_TREE
+#include <sstream>
+#endif
 
 namespace ft {
 
@@ -36,6 +39,13 @@ struct pair {
 			second = pr.second;
 			return *this;
 		};
+		#ifdef FT_DEBUG_TREE
+		std::string to_string() {
+			std::stringstream ss;
+			ss << first << ": " << second;
+			return ss.str();
+		};
+		#endif
 };
 
 template <class T1, class T2>
@@ -67,6 +77,8 @@ template <class T1, class T2>
 bool operator>= (pair<T1, T2> const & lhs, pair<T1, T2> const & rhs) {
 	return !(lhs < rhs);
 }
+
+
 
 };
 
