@@ -1,39 +1,40 @@
-#ifndef MAP_ITERATOR_HPP
-# define MAP_ITERATOR_HPP
+#ifndef TREE_ITERATOR_HPP
+# define TREE_ITERATOR_HPP
+
+#include "../test.cpp"
 
 namespace ft {
 
-template <class T>
-class map_iterator {
+template <class T, class Node = Node<T> >
+class tree_iterator {
 	public:
 		typedef T								value_type;
 		typedef T*								pointer;
 		typedef T&								reference;
 		typedef std::ptrdiff_t					difference_type;
 		typedef std::bidirectional_iterator_tag	iterator_category;
-		typedef Node<T>							Node
 
 	private:
 		Node *	_current;
 		Node *	_root;
-		Node *	_sentinel; // Maybe?
+		Node *	_leaf; // Maybe?
 	public:
-		map_iterator () : _current(), _root(), _sentinel() {}
-		map_iterator (map_iterator const & src)
-			: _current(src._current), _root(src._root), sentinel(src._sentinel) {}
-		map_iterator (Node * current, Node * root)
+		tree_iterator () : _current(), _root(), _leaf() {}
+		tree_iterator (tree_iterator const & src)
+			: _current(src._current), _root(src._root), sentinel(src._leaf) {}
+		tree_iterator (Node * current, Node * root)
 			: _current(current), _root(root), sentinel(root->parent) {}
 
-		map_iterator &	operator= (map_iterator const & rhs) {
+		tree_iterator &	operator= (tree_iterator const & rhs) {
 			_current = rhs._current;
 			_root = rhs._root;
-			_sentinel = rhs._sentinel;
+			_leaf = rhs._leaf;
 		}
 
-		bool	operator== (map_iterator const & rhs) {
+		bool	operator== (tree_iterator const & rhs) {
 			return _current == rhs._current;
 		}
-		bool	operator!= (map_iterator const & rhs) {
+		bool	operator!= (tree_iterator const & rhs) {
 			return !operator==(rhs);
 		}
 		reference	operator* () {
@@ -43,8 +44,8 @@ class map_iterator {
 			return &oprator*();
 		}
 		
-		map_iterator &	operator++ () {
-			if (_current->right != _sentinel) {
+		tree_iterator &	operator++ () {
+			if (_current->right != _leaf) {
 				_current = min(_current->right;
 			}
 			else if (_current == current->parent->left)
@@ -54,13 +55,13 @@ class map_iterator {
 			return *this;
 		}
 
-		map_iterator	operator++ (int) {
-			map_iterator	tmp = *this;
+		tree_iterator	operator++ (int) {
+			tree_iterator	tmp = *this;
 			operator++();
 			return tmp;
 		}
 
-		map_iterator &	operator-- () {
+		tree_iterator &	operator-- () {
 			if (current->left != sentinel) {
 				_current = max(_current->left);
 			}
@@ -71,8 +72,8 @@ class map_iterator {
 			return *this;
 		}
 
-		map_iterator	operator-- (int) {
-			map_iterator	tmp = *this;
+		tree_iterator	operator-- (int) {
+			tree_iterator	tmp = *this;
 			operator--();
 			return tmp;
 		}
@@ -91,7 +92,7 @@ class map_iterator {
 };
 
 template <class T>
-class map_const_iterator {
+class tree_const_iterator {
 	public:
 		typedef T const							value_type;
 		typedef T const *						pointer;
@@ -103,26 +104,26 @@ class map_const_iterator {
 	private:
 		Node *	_current;
 		Node *	_root;
-		Node *	_sentinel; // Maybe?
+		Node *	_leaf; // Maybe?
 	public:
-		map_const_iterator () : _current(), _root(), _sentinel() {}
-		map_const_iterator (map_const_iterator const & src)
-			: _current(src._current), _root(src._root), sentinel(src._sentinel) {}
-		map_const_iterator (map_iterator const & src)
-			: _current(src._current), _root(src._root), sentinel(src._sentinel) {}
-		map_const_iterator (Node * current, Node * root)
+		tree_const_iterator () : _current(), _root(), _leaf() {}
+		tree_const_iterator (tree_const_iterator const & src)
+			: _current(src._current), _root(src._root), sentinel(src._leaf) {}
+		tree_const_iterator (tree_iterator const & src)
+			: _current(src._current), _root(src._root), sentinel(src._leaf) {}
+		tree_const_iterator (Node * current, Node * root)
 			: _current(current), _root(root), sentinel(root->parent) {}
 
-		map_const_iterator &	operator= (map_const_iterator const & rhs) {
+		tree_const_iterator &	operator= (tree_const_iterator const & rhs) {
 			_current = rhs._current;
 			_root = rhs._root;
-			_sentinel = rhs._sentinel;
+			_leaf = rhs._leaf;
 		}
 
-		bool	operator== (map_const_iterator const & rhs) {
+		bool	operator== (tree_const_iterator const & rhs) {
 			return _current == rhs._current;
 		}
-		bool	operator!= (map_const_iterator const & rhs) {
+		bool	operator!= (tree_const_iterator const & rhs) {
 			return !operator==(rhs);
 		}
 		reference	operator* () {
@@ -132,8 +133,8 @@ class map_const_iterator {
 			return &oprator*();
 		}
 		
-		map_const_iterator &	operator++ () {
-			if (_current->right != _sentinel) {
+		tree_const_iterator &	operator++ () {
+			if (_current->right != _leaf) {
 				_current = min(_current->right;
 			}
 			else if (_current == current->parent->left)
@@ -143,13 +144,13 @@ class map_const_iterator {
 			return *this;
 		}
 
-		map_const_iterator	operator++ (int) {
-			map_const_iterator	tmp = *this;
+		tree_const_iterator	operator++ (int) {
+			tree_const_iterator	tmp = *this;
 			operator++();
 			return tmp;
 		}
 
-		map_const_iterator &	operator-- () {
+		tree_const_iterator &	operator-- () {
 			if (current->left != sentinel) {
 				_current = max(_current->left);
 			}
@@ -160,8 +161,8 @@ class map_const_iterator {
 			return *this;
 		}
 
-		map_const_iterator	operator-- (int) {
-			map_const_iterator	tmp = *this;
+		tree_const_iterator	operator-- (int) {
+			tree_const_iterator	tmp = *this;
 			operator--();
 			return tmp;
 		}

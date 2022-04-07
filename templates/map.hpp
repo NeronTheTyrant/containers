@@ -53,6 +53,8 @@ class map {
 		map (map const & x)
 		: _rbtree(x._rbtree), _alloc(x._alloc), _comp(x._comp) {}
 
+		~
+
 
 
 };
