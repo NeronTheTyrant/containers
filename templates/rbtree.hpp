@@ -1,6 +1,8 @@
 #ifndef RBTREE_HPP
 # define RBTREE_HPP
 #include "../temp.hpp"
+#include "tree_iterator.hpp"
+
 namespace ft {
 
 
@@ -30,7 +32,7 @@ class Node {
 		};
 };
 */
-template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
+template <class T, class Compare = std::less<T>, class Alloc = std::_allocator<T> >
 class RBT {
 	public:
 		typedef T						value_type;
@@ -38,32 +40,36 @@ class RBT {
 		typedef ft::Node<value_type>		Node;
 		typedef Alloc					allocator_type;
 		typedef std::allocator<Node>	node_allocator_type;
-		typedef Alloc::size_type		size_type;
-		Node *				root;
-		Node *				sentinel; // leaf
-		size_type			size;
-		allocator_type		alloc;
-		node_allocator_type	nodeAlloc;
+		typedef typename Alloc::_size_type		size_type;
+
+		typedef tree_iterator<T>		iterator;
+		typedef tree_const_iterator<T>	const_iterator;
+
+		Node *				_root;
+		Node *				_sentinel; // leaf
+		size_type			_size;
+		_allocator_type		alloc;
+		node_allocator_type	_nodeAlloc;
 		key_compare			comp;
 	protected:
 //		#define BLACK	0
 //		#define RED		1
 	public:
 		RBT(key_compare const & compare = key_compare(),
-			allocator_type const & allocator = allocator_type())
-			: root(NULL), sentinel(NULL), alloc(allocator), nodeAlloc(node_allocator_type()),
+			_allocator_type const & allocator = allocator_type())
+			: _root(NULL), _sentinel(NULL), _alloc(allocator), _nodeAlloc(node_allocator_type()),
 			  comp(compare) {
 			initSentinel();
-			root = sentinel;
-			size = 0;
+			_root = _sentinel;
+			_size = 0;
 		};
 
 		RBT (RBT const & src)
-			: root(NULL), sentinel(NULL), alloc(src.allocator), nodeAlloc(src.nodeAlloc), 
+			: _root(NULL), _sentinel(NULL), _alloc(src.allocator), _nodeAlloc(src.nodeAlloc), 
 			  comp(src.comp) {
 			initSentinel();
-			root = sentinel;
-			size = 0;
+			_root = _sentinel;
+			_size = 0;
 			*this = src;
 		}
 
@@ -72,27 +78,31 @@ class RBT {
 			iterator ite = rhs.end();
 			for (iterator it = rhs.begin; it != end; it++)
 				insertNode(*it);
-			size = rhs.size;
+			_size = rhs.size;
 			return *this;
 		}
 
+		iterator begin () {
+			return minimum(this->_root);
+		}
+
 		size_type	size() {
-			return this->size;
+			return this->_size;
 		}
 
 		Node *	root() {
-			return this->root;
+			return this->_root;
 		}
 
 		Node *	sentinel() {
-			return this->sentinel;
+			return this->_sentinel;
 		}
 
 		void	insertNode(value_type const & val) {
-			Node *	z = newNode(val, sentinel);
-			Node *	y = sentinel;
-			Node *	x = root;
-			while (x != sentinel) {
+			Node *	z = newNode(val, _sentinel);
+			Node *	y = _sentinel;
+			Node *	x = _root;
+			while (x != _sentinel) {
 				y = x;
 				if (comp(z->data, x->data))
 					x = x->left;
@@ -100,32 +110,32 @@ class RBT {
 					x = x->right;
 			}
 			z->parent = y;
-			if (y == sentinel)
-				root = z;
+			if (y == _sentinel)
+				_root = z;
 			else if (comp(z->data, y->data))
 				y->left = z;
 			else
 				y->right = z;
 			insertFixup(z);
-			size += 1;
+			_size += 1;
 		}
 
 		Node *	minimum(Node * node) {
-			while (node->left != sentinel)
+			while (node->left != _sentinel)
 				node = node->left;
 			return node;
 		};
 
 		Node *	maximum(Node * node) {
-			while (node->right != sentinel)
+			while (node->right != _sentinel)
 				node = node->right;
 			return node;
 		};
 
 		void deleteNode(value_type key) {
-			Node * z = sentinel;
-			Node * tmp = root;
-			while (tmp != sentinel) {
+			Node * z = _sentinel;
+			Node * tmp = _root;
+			while (tmp != _sentinel) {
 				if (tmp->data == key) {
 					z = tmp;
 				}
@@ -136,18 +146,18 @@ class RBT {
 					tmp = tmp->left;
 				}
 			}
-			if (z == sentinel) {
+			if (z == _sentinel) {
 				std::cout << "Key not found in the tree" << std::endl;
 				return;
 			}
 			Node *	y = z;
 			Node *	x;
 			bool y_color = y->color;
-			if (z->left == sentinel) {
+			if (z->left == _sentinel) {
 				x = z->right;
 				transplant(z, z->right);
 			}
-			else if (z->right == sentinel) {
+			else if (z->right == _sentinel) {
 				x = z->left;
 				transplant(z, z->left);
 			}
@@ -169,27 +179,27 @@ class RBT {
 			if (y_color == 0) {
 				deleteFix(x);
 			}
-			size -= 1;
+			_size -= 1;
 		}
 
 	private:
 		void	initSentinel() {
-			sentinel = nodeAlloc.allocate(1);
-			nodeAlloc.construct(sentinel, Node());
-			alloc.construct(&sentinel->data, value_type());
-			sentinel->parent = NULL;
-			sentinel->right = NULL;
-			sentinel->left = NULL;
-			sentinel->color = BLACK;
+			_sentinel = _nodeAlloc._allocate(1);
+			_nodeAlloc.construct(_sentinel, Node());
+			_alloc.construct(&_sentinel->data, value_type());
+			_sentinel->parent = NULL;
+			_sentinel->right = NULL;
+			_sentinel->left = NULL;
+			_sentinel->color = BLACK;
 		}
 
 		Node *	newNode (value_type const & val, Node * parent) {
-			Node * tmp = nodeAlloc.allocate(1);
-			nodeAlloc.construct(tmp, Node());
-			alloc.construct(&tmp->data, val);
+			Node * tmp = _nodeAlloc._allocate(1);
+			_nodeAlloc.construct(tmp, Node());
+			_alloc.construct(&tmp->data, val);
 			tmp->parent = parent;
-			tmp->right = sentinel;
-			tmp->left = sentinel;
+			tmp->right = _sentinel;
+			tmp->left = _sentinel;
 			tmp->color = RED;
 		}
 
@@ -197,11 +207,11 @@ class RBT {
 			Node *	y;
 			y = x->right;
 			x->right = y->left;
-			if (y->left != sentinel)
+			if (y->left != _sentinel)
 				y->left->parent = x;
 			y->parent = x->parent;
-			if (x->parent == sentinel)
-				root = y;
+			if (x->parent == _sentinel)
+				_root = y;
 			else if (x == x->parent->left)
 				x->parent->left = y;
 			else
@@ -214,11 +224,11 @@ class RBT {
 			Node *	y;
 			y = x->left;
 			x->left = y->right;
-			if (y->right != sentinel)
+			if (y->right != _sentinel)
 				y->right->parent = x;
 			y->parent = x->parent;
-			if (x->parent == sentinel)
-				root = y;
+			if (x->parent == _sentinel)
+				_root = y;
 			else if (x == x->parent->right)
 				x->parent->right = y;
 			else
@@ -266,17 +276,17 @@ class RBT {
 						leftRotate(z->parent->parent); //	 case 3
 					}
 				}
-				if (z == root)
+				if (z == _root)
 					break;
 			}
-			root->color = BLACK; //							 case 0
-			ft::Node<value_type>::DG_tree(root);
+			_root->color = BLACK; //							 case 0
+			ft::Node<value_type>::DG_tree(_root);
 		}
 
 
 	void	transplant(Node * a, Node * b) {
-		if (a->parent == sentinel)
-			root = b;
+		if (a->parent == _sentinel)
+			_root = b;
 		else if (a == a->parent->left)
 			a->parent->left = b;
 		else
@@ -286,7 +296,7 @@ class RBT {
 
 	void	deleteFix (Node * x) { // Called only when the deleted node was black.
 		Node *	s; // s will be x's sibling
-		while (x != root && x != sentinel && x->color == BLACK) {
+		while (x != _root && x != _sentinel && x->color == BLACK) {
 			if (x == x->parent->left) { // if x is a left child
 				s = x->parent->right;
 				if (s->color == RED) { // CASE 1
@@ -300,8 +310,8 @@ class RBT {
 					x = x->parent; // move pointer to parent
 				}
 				else {
-					if (s->right->color = BLACK) { // CASE 3 - this might be a sentinel
-						s->left->color = BLACK; // sibling's left child becomes black. This may be a sentinel.
+					if (s->right->color = BLACK) { // CASE 3 - this might be a _sentinel
+						s->left->color = BLACK; // sibling's left child becomes black. This may be a _sentinel.
 						s->color = RED; // sibling becomes red
 						rightRotate(s);
 						s = x->parent->right; // since we moved sibling, assign to s x's current sibling
@@ -309,9 +319,9 @@ class RBT {
 					// CASE 4
 					s->color = x->parent->color; // sibling becomes the same color as its parent
 					x->parent->color = BLACK; // x's parent becomes black
-					s->right->color = BLACK; // sibling's child becomes black (may be sentinel)
+					s->right->color = BLACK; // sibling's child becomes black (may be _sentinel)
 					leftRotate(x->parent);
-					x = root; // move x pointer to root, finishing the loop
+					x = _root; // move x pointer to root, finishing the loop
 				}
 			}
 			else { // same as above, but left and right are flipped
@@ -339,12 +349,12 @@ class RBT {
 					x->parent->color = BLACK;
 					s->left->color = BLACK;
 					rightRotate(x->parent);
-					x = root;
+					x = _root;
 				}
 			}
 		}
 		x->color = BLACK;
-		ft::Node<value_type>::DG_tree(root);
+		ft::Node<value_type>::DG_tree(_root);
 	};
 };
 

@@ -21,9 +21,9 @@ class tree_iterator {
 	public:
 		tree_iterator () : _current(), _root(), _leaf() {}
 		tree_iterator (tree_iterator const & src)
-			: _current(src._current), _root(src._root), sentinel(src._leaf) {}
+			: _current(src._current), _root(src._root), _leaf(src._leaf) {}
 		tree_iterator (Node * current, Node * root)
-			: _current(current), _root(root), sentinel(root->parent) {}
+			: _current(current), _root(root), _leaf(root->parent) {}
 
 		tree_iterator &	operator= (tree_iterator const & rhs) {
 			_current = rhs._current;
@@ -41,17 +41,17 @@ class tree_iterator {
 			return _current->data;
 		}
 		pointer		operator-> () {
-			return &oprator*();
+			return &operator*();
 		}
 		
 		tree_iterator &	operator++ () {
 			if (_current->right != _leaf) {
-				_current = min(_current->right;
+				_current = min(_current->right);
 			}
-			else if (_current == current->parent->left)
+			else if (_current == _current->parent->left)
 				_current = _current->parent;
 			else
-				_current = sentinel;
+				_current = _leaf;
 			return *this;
 		}
 
@@ -62,13 +62,13 @@ class tree_iterator {
 		}
 
 		tree_iterator &	operator-- () {
-			if (current->left != sentinel) {
+			if (_current->left != _leaf) {
 				_current = max(_current->left);
 			}
-			else if (_current == current->parent->right)
-				_current = current->parent;
+			else if (_current == _current->parent->right)
+				_current = _current->parent;
 			else
-				_current = sentinel;
+				_current = _leaf;
 			return *this;
 		}
 
@@ -79,19 +79,19 @@ class tree_iterator {
 		}
 
 		Node *	min (Node *node) {
-			while (node->left != sentinel)
+			while (node->left != _leaf)
 				node = node->left;
 			return node;
 		}
 
 		Node *	max (Node *node) {
-			while (node->right != sentinel)
+			while (node->right != _leaf)
 				node = node->right;
 			return node;
 		}
 };
 
-template <class T>
+template <class T, class Node = Node<T> >
 class tree_const_iterator {
 	public:
 		typedef T const							value_type;
@@ -99,7 +99,6 @@ class tree_const_iterator {
 		typedef T const &						reference;
 		typedef std::ptrdiff_t					difference_type;
 		typedef std::bidirectional_iterator_tag	iterator_category;
-		typedef Node<T>							Node
 
 	private:
 		Node *	_current;
@@ -108,11 +107,11 @@ class tree_const_iterator {
 	public:
 		tree_const_iterator () : _current(), _root(), _leaf() {}
 		tree_const_iterator (tree_const_iterator const & src)
-			: _current(src._current), _root(src._root), sentinel(src._leaf) {}
-		tree_const_iterator (tree_iterator const & src)
-			: _current(src._current), _root(src._root), sentinel(src._leaf) {}
+			: _current(src._current), _root(src._root), _leaf(src._leaf) {}
+		tree_const_iterator (tree_iterator<T, Node> const & src)
+			: _current(src._current), _root(src._root), _leaf(src._leaf) {}
 		tree_const_iterator (Node * current, Node * root)
-			: _current(current), _root(root), sentinel(root->parent) {}
+			: _current(current), _root(root), _leaf(root->parent) {}
 
 		tree_const_iterator &	operator= (tree_const_iterator const & rhs) {
 			_current = rhs._current;
@@ -130,17 +129,17 @@ class tree_const_iterator {
 			return _current->data;
 		}
 		pointer		operator-> () {
-			return &oprator*();
+			return &operator*();
 		}
 		
 		tree_const_iterator &	operator++ () {
 			if (_current->right != _leaf) {
-				_current = min(_current->right;
+				_current = min(_current->right);
 			}
-			else if (_current == current->parent->left)
+			else if (_current == _current->parent->left)
 				_current = _current->parent;
 			else
-				_current = sentinel;
+				_current = _leaf;
 			return *this;
 		}
 
@@ -151,13 +150,13 @@ class tree_const_iterator {
 		}
 
 		tree_const_iterator &	operator-- () {
-			if (current->left != sentinel) {
+			if (_current->left != _leaf) {
 				_current = max(_current->left);
 			}
-			else if (_current == current->parent->right)
-				_current = current->parent;
+			else if (_current == _current->parent->right)
+				_current = _current->parent;
 			else
-				_current = sentinel;
+				_current = _leaf;
 			return *this;
 		}
 
@@ -168,14 +167,18 @@ class tree_const_iterator {
 		}
 
 		Node *	min (Node *node) {
-			while (node->left != sentinel)
+			while (node->left != _leaf)
 				node = node->left;
 			return node;
 		}
 
 		Node *	max (Node *node) {
-			while (node->right != sentinel)
+			while (node->right != _leaf)
 				node = node->right;
 			return node;
 		}
 };
+
+};
+
+#endif
