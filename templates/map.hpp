@@ -1,6 +1,8 @@
 #ifndef MAP_HPP
 # define MAP_HPP
 
+#include "map_iterator.hpp"
+
 namespace ft {
 
 template <class Key, class T, class Compare = less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> >
@@ -34,9 +36,24 @@ class map {
 				}
 		};
 	protected:
-		RBT<value_type, value_compare>	rbtree;
+		RBT<value_type, value_compare>	_rbtree;
+		allocator_type					_alloc;
+		key_compare						_comp;
 	public:
-		
+		explicit map (key_compare const & comp = key_compare(),
+		allocator_type const & alloc = allocator_type())
+		: _rbtree(), _alloc(alloc), _comp(comp) {}
+	template <class InputIterator>
+		map (InputIterator first, InputIterator last,
+		key_compare const & comp = key_compare(),
+		allocator_type const & alloc = allocator_type())
+		: _rbtree(), _alloc(alloc), _comp(comp) {
+			insert(first, last);
+		}
+		map (map const & x)
+		: _rbtree(x._rbtree), _alloc(x._alloc), _comp(x._comp) {}
+
+
 
 };
 

@@ -105,22 +105,24 @@ class map_const_iterator {
 		Node *	_root;
 		Node *	_sentinel; // Maybe?
 	public:
-		map_iterator () : _current(), _root(), _sentinel() {}
-		map_iterator (map_iterator const & src)
+		map_const_iterator () : _current(), _root(), _sentinel() {}
+		map_const_iterator (map_const_iterator const & src)
 			: _current(src._current), _root(src._root), sentinel(src._sentinel) {}
-		map_iterator (Node * current, Node * root)
+		map_const_iterator (map_iterator const & src)
+			: _current(src._current), _root(src._root), sentinel(src._sentinel) {}
+		map_const_iterator (Node * current, Node * root)
 			: _current(current), _root(root), sentinel(root->parent) {}
 
-		map_iterator &	operator= (map_iterator const & rhs) {
+		map_const_iterator &	operator= (map_const_iterator const & rhs) {
 			_current = rhs._current;
 			_root = rhs._root;
 			_sentinel = rhs._sentinel;
 		}
 
-		bool	operator== (map_iterator const & rhs) {
+		bool	operator== (map_const_iterator const & rhs) {
 			return _current == rhs._current;
 		}
-		bool	operator!= (map_iterator const & rhs) {
+		bool	operator!= (map_const_iterator const & rhs) {
 			return !operator==(rhs);
 		}
 		reference	operator* () {
@@ -130,7 +132,7 @@ class map_const_iterator {
 			return &oprator*();
 		}
 		
-		map_iterator &	operator++ () {
+		map_const_iterator &	operator++ () {
 			if (_current->right != _sentinel) {
 				_current = min(_current->right;
 			}
@@ -141,13 +143,13 @@ class map_const_iterator {
 			return *this;
 		}
 
-		map_iterator	operator++ (int) {
-			map_iterator	tmp = *this;
+		map_const_iterator	operator++ (int) {
+			map_const_iterator	tmp = *this;
 			operator++();
 			return tmp;
 		}
 
-		map_iterator &	operator-- () {
+		map_const_iterator &	operator-- () {
 			if (current->left != sentinel) {
 				_current = max(_current->left);
 			}
@@ -158,8 +160,8 @@ class map_const_iterator {
 			return *this;
 		}
 
-		map_iterator	operator-- (int) {
-			map_iterator	tmp = *this;
+		map_const_iterator	operator-- (int) {
+			map_const_iterator	tmp = *this;
 			operator--();
 			return tmp;
 		}

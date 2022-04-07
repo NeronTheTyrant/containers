@@ -49,15 +49,18 @@ class RBT {
 //		#define BLACK	0
 //		#define RED		1
 	public:
-		RBT(allocator_type const & allocator = allocator_type())
-			: root(NULL), sentinel(NULL), alloc(allocator), nodeAlloc(node_allocator_type()) {
+		RBT(key_compare const & compare = key_compare(),
+			allocator_type const & allocator = allocator_type())
+			: root(NULL), sentinel(NULL), alloc(allocator), nodeAlloc(node_allocator_type()),
+			  comp(compare) {
 			initSentinel();
 			root = sentinel;
 			size = 0;
 		};
 
 		RBT (RBT const & src)
-			: root(NULL), sentinel(NULL), alloc(src.allocator), nodeAlloc(src.nodeAlloc), {
+			: root(NULL), sentinel(NULL), alloc(src.allocator), nodeAlloc(src.nodeAlloc), 
+			  comp(src.comp) {
 			initSentinel();
 			root = sentinel;
 			size = 0;
