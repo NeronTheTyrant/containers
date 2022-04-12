@@ -20,6 +20,7 @@ class map {
 		typedef typename Alloc::const_pointer			const_pointer;
 		typedef typename Alloc::difference_type			difference_type;
 		typedef typename Alloc::size_type				size_type;
+		typedef RBT<value_type, value_compare>			tree_type;
 	
 	template <class Key, class T, class Compare, class Alloc>
 		class map<Key, T, Compare, Alloc>::value_compare {
@@ -36,9 +37,9 @@ class map {
 				}
 		};
 	protected:
-		RBT<value_type, value_compare>	_rbtree;
-		allocator_type					_alloc;
-		key_compare						_comp;
+		tree_type		_rbtree;
+		allocator_type	_alloc;
+		key_compare		_comp;
 	public:
 		explicit map (key_compare const & comp = key_compare(),
 		allocator_type const & alloc = allocator_type())
@@ -53,7 +54,51 @@ class map {
 		map (map const & x)
 		: _rbtree(x._rbtree), _alloc(x._alloc), _comp(x._comp) {}
 
-		~
+		~map () {}
+
+		map &	operator= (map const & rhs) {
+			this->_rbtree = rhs._rbtree;
+			return *this;
+		}
+
+		typedef typename tree_type::iterator		iterator;
+		typedef typename tree_type::const_iterator	const_iterator;
+
+		iterator	begin () {
+			return _rbtree.begin();
+		}
+
+		const_iterator	begin () const {
+			return _rbtree.begin();
+		}
+
+		iterator	end() {
+			return _rbtree.end();
+		}
+
+		const_iterator	end() const {
+			return _rbtree.end();
+		}
+
+		typedef ft::reverse_iterator<iterator>			reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+
+		reverse_iterator	rbegin () {
+			return reverse_iterator(_rbtree.end());
+		}
+
+		const_reverse_iterator	rbegin () const {
+			return const_reverse_iterator(_rbtree.end());
+		}
+
+		reverse_iterator	rend () {
+			return reverse_iterator(_rbtree.begin());
+		}
+
+		const_reverse_iterator	rend () const {
+			return const_reverse_iterator(_rbtree.begin());
+		}
+
 
 
 

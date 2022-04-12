@@ -15,6 +15,13 @@ int	main (void)
 	rbt.insertNode(ft::make_pair(2, 58));
 	rbt.insertNode(ft::make_pair(100, 78));
 
+	{
+		ft::RBT<ft::pair<int, int> >	rbt2;
+		rbt2 = rbt;
+		rbt2.root()->DG_tree(rbt2.root());
+	}
+
 	rbt.deleteNode(ft::make_pair(13, 58));
+	ft::RBT<ft::pair<int, int> >	test;
 
 }

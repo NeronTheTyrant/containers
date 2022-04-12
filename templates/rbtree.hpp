@@ -32,15 +32,15 @@ class Node {
 		};
 };
 */
-template <class T, class Compare = std::less<T>, class Alloc = std::_allocator<T> >
+template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
 class RBT {
 	public:
-		typedef T						value_type;
-		typedef Compare					key_compare;
+		typedef T							value_type;
+		typedef Compare						key_compare;
 		typedef ft::Node<value_type>		Node;
-		typedef Alloc					allocator_type;
-		typedef std::allocator<Node>	node_allocator_type;
-		typedef typename Alloc::_size_type		size_type;
+		typedef Alloc						allocator_type;
+		typedef std::allocator<Node>		node_allocator_type;
+		typedef typename Alloc::size_type	size_type;
 
 		typedef tree_iterator<T>		iterator;
 		typedef tree_const_iterator<T>	const_iterator;
@@ -48,17 +48,17 @@ class RBT {
 		Node *				_root;
 		Node *				_sentinel; // leaf
 		size_type			_size;
-		_allocator_type		alloc;
+		allocator_type		_alloc;
 		node_allocator_type	_nodeAlloc;
-		key_compare			comp;
+		key_compare			_comp;
 	protected:
 //		#define BLACK	0
 //		#define RED		1
 	public:
 		RBT(key_compare const & compare = key_compare(),
-			_allocator_type const & allocator = allocator_type())
+			allocator_type const & allocator = allocator_type())
 			: _root(NULL), _sentinel(NULL), _alloc(allocator), _nodeAlloc(node_allocator_type()),
-			  comp(compare) {
+			  _comp(compare) {
 			initSentinel();
 			_root = _sentinel;
 			_size = 0;
@@ -66,125 +66,86 @@ class RBT {
 
 		RBT (RBT const & src)
 			: _root(NULL), _sentinel(NULL), _alloc(src.allocator), _nodeAlloc(src.nodeAlloc), 
-			  comp(src.comp) {
+			  _comp(src._comp) {
 			initSentinel();
 			_root = _sentinel;
 			_size = 0;
 			*this = src;
 		}
 
+		~RBT () {
+			clear();
+			_nodeAlloc.destroy(_sentinel);
+			_nodeAlloc.deallocate(_sentinel, 1);
+		}
+
 		RBT &	operator= (RBT const & rhs) {
 			clear();
-			iterator ite = rhs.end();
-			for (iterator it = rhs.begin; it != end; it++)
+			const_iterator ite = rhs.end();
+			for (const_iterator it = rhs.begin(); it != ite; it++)
 				insertNode(*it);
-			_size = rhs.size;
+			_size = rhs._size;
 			return *this;
 		}
 
-		iterator begin () {
-			return minimum(this->_root);
+		void	clear () {
+			clearHelper(_root);
+			_size = 0;
+			_root = _sentinel;
 		}
 
-		size_type	size() {
+		iterator begin () {
+			return iterator(minimum(this->_root), _root);
+		}
+		
+		const_iterator begin () const {
+			return const_iterator(minimum(this->_root), _root);
+		}
+
+		iterator end () {
+			return iterator(_sentinel, _root);
+		}
+
+		const_iterator end () const {
+			return const_iterator(_sentinel, _root);
+		}
+
+		size_type	size () const {
 			return this->_size;
 		}
 
-		Node *	root() {
+		Node *	root () const {
 			return this->_root;
 		}
 
-		Node *	sentinel() {
+		Node *	sentinel () const {
 			return this->_sentinel;
 		}
 
-		void	insertNode(value_type const & val) {
-			Node *	z = newNode(val, _sentinel);
-			Node *	y = _sentinel;
-			Node *	x = _root;
-			while (x != _sentinel) {
-				y = x;
-				if (comp(z->data, x->data))
-					x = x->left;
-				else
-					x = x->right;
-			}
-			z->parent = y;
-			if (y == _sentinel)
-				_root = z;
-			else if (comp(z->data, y->data))
-				y->left = z;
-			else
-				y->right = z;
-			insertFixup(z);
-			_size += 1;
-		}
-
-		Node *	minimum(Node * node) {
+		Node *	minimum(Node * node) const {
 			while (node->left != _sentinel)
 				node = node->left;
 			return node;
-		};
+		}
 
-		Node *	maximum(Node * node) {
+		Node *	maximum(Node * node) const {
 			while (node->right != _sentinel)
 				node = node->right;
 			return node;
-		};
+		}
+
+		void	insertNode(value_type const & val) {
+			insertNodeHelper(val);
+		}
 
 		void deleteNode(value_type key) {
-			Node * z = _sentinel;
-			Node * tmp = _root;
-			while (tmp != _sentinel) {
-				if (tmp->data == key) {
-					z = tmp;
-				}
-				if (tmp->data <= key) {
-					tmp = tmp->right;
-				}
-				else {
-					tmp = tmp->left;
-				}
-			}
-			if (z == _sentinel) {
-				std::cout << "Key not found in the tree" << std::endl;
-				return;
-			}
-			Node *	y = z;
-			Node *	x;
-			bool y_color = y->color;
-			if (z->left == _sentinel) {
-				x = z->right;
-				transplant(z, z->right);
-			}
-			else if (z->right == _sentinel) {
-				x = z->left;
-				transplant(z, z->left);
-			}
-			else {
-				y = minimum(z->right);
-				y_color = y->color;
-				x = y->right;
-				if (y->parent != z) {
-					transplant(y, y->right);
-					y->right = z->right;
-					y->right->parent = y;
-				}
-				transplant(z, y);
-				y->left = z->left;
-				y->left->parent = y;
-				y->color = z->color;
-			}
-			delete z;
-			if (y_color == 0) {
-				deleteFix(x);
-			}
-			_size -= 1;
+			deleteNodeHelper(key);
 		}
+
 
 	private:
 		void	initSentinel() {
-			_sentinel = _nodeAlloc._allocate(1);
+			_sentinel = _nodeAlloc.allocate(1);
 			_nodeAlloc.construct(_sentinel, Node());
 			_alloc.construct(&_sentinel->data, value_type());
 			_sentinel->parent = NULL;
@@ -194,13 +155,25 @@ class RBT {
 		}
 
 		Node *	newNode (value_type const & val, Node * parent) {
-			Node * tmp = _nodeAlloc._allocate(1);
+			Node * tmp = _nodeAlloc.allocate(1);
 			_nodeAlloc.construct(tmp, Node());
 			_alloc.construct(&tmp->data, val);
 			tmp->parent = parent;
 			tmp->right = _sentinel;
 			tmp->left = _sentinel;
 			tmp->color = RED;
+		}
+
+		void clearHelper (Node *node) {
+			if (node->left && node->left != _sentinel)
+				clearHelper(node->left);
+			if (node->right && node->right != _sentinel)
+				clearHelper(node->right);
+			if (node != _sentinel) {
+				_alloc.destroy(&node->data);
+				_nodeAlloc.destroy(node);
+				_nodeAlloc.deallocate(node, 1);
+			}
 		}
 
 		void	leftRotate (Node * x) {
@@ -235,6 +208,28 @@ class RBT {
 				x->parent->left = y;
 			y->right = x;
 			x->parent = y;
+		}
+
+		void	insertNodeHelper (value_type const & val) {
+			Node *	z = newNode(val, _sentinel);
+			Node *	y = _sentinel;
+			Node *	x = _root;
+			while (x != _sentinel) {
+				y = x;
+				if (_comp(z->data, x->data))
+					x = x->left;
+				else
+					x = x->right;
+			}
+			z->parent = y;
+			if (y == _sentinel)
+				_root = z;
+			else if (_comp(z->data, y->data))
+				y->left = z;
+			else
+				y->right = z;
+			insertFixup(z);
+			_size += 1;
 		}
 
 		void	insertFixup (Node * z) {
@@ -293,6 +288,56 @@ class RBT {
 			a->parent->right = b;
 		b->parent = a->parent;
 	};
+		
+		void deleteNodeHelper (value_type key) {
+			Node * z = _sentinel;
+			Node * tmp = _root;
+			while (tmp != _sentinel) {
+				if (tmp->data == key) {
+					z = tmp;
+				}
+				if (tmp->data <= key) {
+					tmp = tmp->right;
+				}
+				else {
+					tmp = tmp->left;
+				}
+			}
+			if (z == _sentinel) {
+				std::cout << "Key not found in the tree" << std::endl;
+				return;
+			}
+			Node *	y = z;
+			Node *	x;
+			bool y_color = y->color;
+			if (z->left == _sentinel) {
+				x = z->right;
+				transplant(z, z->right);
+			}
+			else if (z->right == _sentinel) {
+				x = z->left;
+				transplant(z, z->left);
+			}
+			else {
+				y = minimum(z->right);
+				y_color = y->color;
+				x = y->right;
+				if (y->parent != z) {
+					transplant(y, y->right);
+					y->right = z->right;
+					y->right->parent = y;
+				}
+				transplant(z, y);
+				y->left = z->left;
+				y->left->parent = y;
+				y->color = z->color;
+			}
+			delete z;
+			if (y_color == 0) {
+				deleteFix(x);
+			}
+			_size -= 1;
+		}
 
 	void	deleteFix (Node * x) { // Called only when the deleted node was black.
 		Node *	s; // s will be x's sibling
