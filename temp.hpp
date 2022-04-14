@@ -35,7 +35,7 @@ namespace ft {
 			bool		color; // 0 is black, 1 is red
 
 			Node() : parent(NULL), left(NULL), right(NULL) {};
-			Node(Node const & src) : parent(src.parent), left(src.left), right(src.left), data(src.data), color(src.color) {};
+			Node(Node const & src) : data(src.data), parent(src.parent), left(src.left), right(src.right), color(src.color) {};
 			~Node() {};
 
 			Node &	operator= (Node const & rhs) {
@@ -393,7 +393,7 @@ namespace ft {
 				int				depth_left;
 				int				depth_right;
 
-				if (!tree || tree->color == SENTINEL)
+				if (!tree)
 					return (0);
 				tree->init_calc();
 				depth_left = _calc_depth(tree->left, depth + 1);

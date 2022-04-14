@@ -27,7 +27,7 @@ struct pair {
 		first_type	first;
 		second_type	second;
 
-		pair () {}; // default
+		pair () : first(), second() {}; // default
 	template <class U, class V>
 		pair (pair<U, V> const & pr) : first(pr.first), second(pr.second) {}; // copy
 		pair (first_type const & a, second_type const & b) : first(a), second(b) {}; //assign

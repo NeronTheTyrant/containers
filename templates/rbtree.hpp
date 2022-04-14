@@ -65,7 +65,7 @@ class RBT {
 		};
 
 		RBT (RBT const & src)
-			: _root(NULL), _sentinel(NULL), _alloc(src.allocator), _nodeAlloc(src.nodeAlloc), 
+			: _root(NULL), _sentinel(NULL), _alloc(src._alloc), _nodeAlloc(src._nodeAlloc), 
 			  _comp(src._comp) {
 			initSentinel();
 			_root = _sentinel;
@@ -122,6 +122,18 @@ class RBT {
 			return this->_sentinel;
 		}
 
+		void	setSize (size_type size) {
+			_size = size;
+		}
+
+		void	setRoot (Node * root) {
+			_root = root;
+		}
+
+		void	setSentinel (Node * sentinel) {
+			_sentinel = sentinel;
+		}
+
 		Node *	minimum(Node * node) const {
 			while (node->left != _sentinel)
 				node = node->left;
@@ -134,12 +146,16 @@ class RBT {
 			return node;
 		}
 
-		void	insertNode(value_type const & val) {
-			insertNodeHelper(val);
+		Node *	insertNode(value_type const & val) {
+			return insertNodeHelper(val);
 		}
 
-		void deleteNode(value_type key) {
-			deleteNodeHelper(key);
+		void deleteNode(Node * z) {
+			deleteNodeHelper(z);
+		}
+
+		void deleteNode(iterator it) {
+			deleteNodeHelper(it.getCurrent());
 		}
 
 
@@ -162,6 +178,7 @@ class RBT {
 			tmp->right = _sentinel;
 			tmp->left = _sentinel;
 			tmp->color = RED;
+			return tmp;
 		}
 
 		void clearHelper (Node *node) {
@@ -210,7 +227,7 @@ class RBT {
 			x->parent = y;
 		}
 
-		void	insertNodeHelper (value_type const & val) {
+		Node *	insertNodeHelper (value_type const & val) {
 			Node *	z = newNode(val, _sentinel);
 			Node *	y = _sentinel;
 			Node *	x = _root;
@@ -230,6 +247,7 @@ class RBT {
 				y->right = z;
 			insertFixup(z);
 			_size += 1;
+			return z;
 		}
 
 		void	insertFixup (Node * z) {
@@ -289,24 +307,7 @@ class RBT {
 		b->parent = a->parent;
 	};
 		
-		void deleteNodeHelper (value_type key) {
-			Node * z = _sentinel;
-			Node * tmp = _root;
-			while (tmp != _sentinel) {
-				if (tmp->data == key) {
-					z = tmp;
-				}
-				if (tmp->data <= key) {
-					tmp = tmp->right;
-				}
-				else {
-					tmp = tmp->left;
-				}
-			}
-			if (z == _sentinel) {
-				std::cout << "Key not found in the tree" << std::endl;
-				return;
-			}
+		void deleteNodeHelper (Node * z) {
 			Node *	y = z;
 			Node *	x;
 			bool y_color = y->color;
@@ -337,6 +338,7 @@ class RBT {
 				deleteFix(x);
 			}
 			_size -= 1;
+			ft::Node<value_type>::DG_tree(_root);
 		}
 
 	void	deleteFix (Node * x) { // Called only when the deleted node was black.
@@ -355,7 +357,7 @@ class RBT {
 					x = x->parent; // move pointer to parent
 				}
 				else {
-					if (s->right->color = BLACK) { // CASE 3 - this might be a _sentinel
+					if (s->right->color == BLACK) { // CASE 3 - this might be a _sentinel
 						s->left->color = BLACK; // sibling's left child becomes black. This may be a _sentinel.
 						s->color = RED; // sibling becomes red
 						rightRotate(s);
@@ -399,7 +401,6 @@ class RBT {
 			}
 		}
 		x->color = BLACK;
-		ft::Node<value_type>::DG_tree(_root);
 	};
 };
 

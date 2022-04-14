@@ -30,6 +30,7 @@ class tree_iterator {
 			_current = rhs._current;
 			_root = rhs._root;
 			_leaf = rhs._leaf;
+			return *this;
 		}
 
 		bool	operator== (tree_iterator const & rhs) {
@@ -49,10 +50,17 @@ class tree_iterator {
 			if (_current->right != _leaf) {
 				_current = min(_current->right);
 			}
-			else if (_current == _current->parent->left)
-				_current = _current->parent;
-			else
+			else if (_current->parent != _leaf) {
+				while (_current->parent != _leaf && _current->parent->right == _current)
+					_current = _current->parent;
+				if (_current == _current->parent->left)
+					_current = _current->parent;
+				else
+					_current = _leaf;
+			}
+			else {
 				_current = _leaf;
+			}
 			return *this;
 		}
 
@@ -66,10 +74,17 @@ class tree_iterator {
 			if (_current->left != _leaf) {
 				_current = max(_current->left);
 			}
-			else if (_current == _current->parent->right)
-				_current = _current->parent;
-			else
+			else if (_current->parent != _leaf) {
+				while (_current->parent != _leaf && _current->parent->left == _current)
+					_current = _current->parent;
+				if (_current == _current->parent->right)
+					_current = _current->parent;
+				else
+					_current = _leaf;
+			}
+			else {
 				_current = _leaf;
+			}
 			return *this;
 		}
 
@@ -89,6 +104,10 @@ class tree_iterator {
 			while (node->right != _leaf)
 				node = node->right;
 			return node;
+		}
+
+		Node *	getCurrent () const {
+			return _current;
 		}
 };
 
@@ -177,6 +196,10 @@ class tree_const_iterator {
 			while (node->right != _leaf)
 				node = node->right;
 			return node;
+		}
+
+		Node *	getCurrent () const {
+			return _current;
 		}
 };
 
