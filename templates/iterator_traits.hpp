@@ -6,7 +6,7 @@
 /*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 18:00:42 by mlebard           #+#    #+#             */
-/*   Updated: 2022/03/28 18:00:47 by mlebard          ###   ########.fr       */
+/*   Updated: 2022/04/15 17:30:17 by mlebard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ class iterator_traits {
 template <class T>
 class iterator_traits<T*> {
 	public:
-		typedef ptrdiff_t							difference_type;
+		typedef std::ptrdiff_t							difference_type;
 		typedef T									value_type;
 		typedef T*									pointer;
 		typedef T&									reference;
@@ -39,7 +39,7 @@ class iterator_traits<T*> {
 template <class T>
 class iterator_traits<const T*> {
 	public:
-		typedef ptrdiff_t							difference_type;
+		typedef std::ptrdiff_t							difference_type;
 		typedef T									value_type;
 		typedef const T*									pointer;
 		typedef const T&									reference;

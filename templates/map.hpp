@@ -2,6 +2,9 @@
 # define MAP_HPP
 
 #include "rbtree.hpp"
+#include "reverse_iterator.hpp"
+#include "pair.hpp"
+#include "make_pair.hpp"
 
 namespace ft {
 
@@ -160,7 +163,7 @@ class map {
 		}
 
 		void	erase (iterator first, iterator last) {
-			for (; first != end; first++) {
+			for (; first != last; first++) {
 				_rbtree.deleteNode(first);
 			}
 		}
@@ -224,23 +227,23 @@ class map {
 		}
 
 		size_type	count (key_type const & k) const {
-			return (find(k) != end);
+			return (find(k) != end());
 		}
 
 		iterator	lower_bound (key_type const & k) {
 			iterator it = begin();
 			for (iterator ite = end(); it != ite; it++) {
 				if (!_comp(it->first, k))
-					it;
+					return it;
 			}
 			return end();
 		}
 
 		const_iterator	lower_bound (key_type const & k) const {
-			const_iterator it = begin;
+			const_iterator it = begin();
 			for (const_iterator ite = end(); it != ite; it++) {
 				if (!_comp(it->first, k))
-					it;
+					return it;
 			}
 			return end();
 		}

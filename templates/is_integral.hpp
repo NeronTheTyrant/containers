@@ -6,7 +6,7 @@
 /*   By: mlebard <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 17:52:37 by mlebard           #+#    #+#             */
-/*   Updated: 2022/03/28 17:53:17 by mlebard          ###   ########.fr       */
+/*   Updated: 2022/04/15 17:31:25 by mlebard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ struct is_integral_base<char>				{ static bool const value = true;};
 
 template <>
 struct is_integral_base<unsigned char>		{ static bool const value = true;};
-
+/*
 template <>
 struct is_integral_base<char16_t>			{ static bool const value = true;};
 
 template <>
 struct is_integral_base<char32_t>			{ static bool const value = true;};
-
+*/
 template <>
 struct is_integral_base<wchar_t>			{ static bool const value = true;};
 

@@ -33,16 +33,16 @@ class tree_iterator {
 			return *this;
 		}
 
-		bool	operator== (tree_iterator const & rhs) {
+		bool	operator== (tree_iterator const & rhs) const {
 			return _current == rhs._current;
 		}
-		bool	operator!= (tree_iterator const & rhs) {
+		bool	operator!= (tree_iterator const & rhs) const {
 			return !operator==(rhs);
 		}
-		reference	operator* () {
+		reference	operator* () const{
 			return _current->data;
 		}
-		pointer		operator-> () {
+		pointer		operator-> () const {
 			return &operator*();
 		}
 		
@@ -137,18 +137,19 @@ class tree_const_iterator {
 			_current = rhs._current;
 			_root = rhs._root;
 			_leaf = rhs._leaf;
+			return *this;
 		}
 
-		bool	operator== (tree_const_iterator const & rhs) {
+		bool	operator== (tree_const_iterator const & rhs) const {
 			return _current == rhs._current;
 		}
-		bool	operator!= (tree_const_iterator const & rhs) {
+		bool	operator!= (tree_const_iterator const & rhs)  const {
 			return !operator==(rhs);
 		}
-		reference	operator* () {
+		reference	operator* () const {
 			return _current->data;
 		}
-		pointer		operator-> () {
+		pointer		operator-> () const {
 			return &operator*();
 		}
 		

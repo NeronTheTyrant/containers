@@ -293,7 +293,7 @@ class RBT {
 					break;
 			}
 			_root->color = BLACK; //							 case 0
-			ft::Node<value_type>::DG_tree(_root);
+	//		ft::Node<value_type>::DG_tree(_root);
 		}
 
 
@@ -338,7 +338,7 @@ class RBT {
 				deleteFix(x);
 			}
 			_size -= 1;
-			ft::Node<value_type>::DG_tree(_root);
+//			ft::Node<value_type>::DG_tree(_root);
 		}
 
 	void	deleteFix (Node * x) { // Called only when the deleted node was black.
