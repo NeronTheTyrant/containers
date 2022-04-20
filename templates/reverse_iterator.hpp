@@ -21,7 +21,7 @@ template <class Iterator>
 class reverse_iterator {
 	public:
 		typedef Iterator							iterator_type;
-		typedef ft::iterator_traits<Iterator>			traits;
+		typedef ft::iterator_traits<Iterator>		traits;
 		typedef typename traits::iterator_category	iterator_category;
 		typedef typename traits::value_type			value_type;
 		typedef typename traits::difference_type	difference_type;
@@ -39,7 +39,11 @@ class reverse_iterator {
 		iterator_type base () const {return _base;};
 
 		/********* Operator Overloads ***********/
-		reference			operator*	() const					{iterator_type tmp(_base); tmp--; return *tmp;};
+		reference			operator*	() const					{
+			iterator_type tmp(_base);
+			tmp--;
+			return *tmp;
+		}
 		reverse_iterator	operator+	(difference_type n) const	{return reverse_iterator(_base - n);};
 		reverse_iterator &	operator++	()							{_base--; return *this;};
 		reverse_iterator	operator++	(int)						{reverse_iterator temp = *this; ++(*this); return temp;};

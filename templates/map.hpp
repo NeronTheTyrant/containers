@@ -114,13 +114,14 @@ class map {
 		}
 
 		size_type	max_size () const {
-			return _alloc.max_size();
+			std::allocator<Node>	tmp;
+			return tmp.max_size();
 		}
 
 		//************** Element Access ************//
 
 		mapped_type &	operator[] (key_type const & k) {
-			return (insert(make_pair(k, mapped_type()))).first->second;
+			return (insert(ft::make_pair(k, mapped_type()))).first->second;
 		}
 
 		//************ Modifiers *******************//
@@ -149,7 +150,11 @@ class map {
 		}
 
 		void	erase (iterator position) {
+//			std::cout << "before" << std::endl;
+//			ft::Node<value_type>::DG_tree(_rbtree.root());
 			_rbtree.deleteNode(position);
+//			std::cout << "after" << std::endl;
+//			ft::Node<value_type>::DG_tree(_rbtree.root());
 		}
 
 		size_type	erase (key_type const & k) {
@@ -163,9 +168,17 @@ class map {
 		}
 
 		void	erase (iterator first, iterator last) {
-			for (; first != last; first++) {
-				_rbtree.deleteNode(first);
+			iterator tmp;
+//			std::cout << "before" << std::endl;
+//				ft::Node<value_type>::DG_tree(_rbtree.root());
+			while (first != last) {
+				tmp = first;
+				first++;
+				erase(tmp);
+		//		_rbtree.deleteNode(tmp);
 			}
+//			std::cout << "after" << std::endl;
+//			ft::Node<value_type>::DG_tree(_rbtree.root());
 		}
 
 		void	swap (map & x) {
@@ -233,7 +246,7 @@ class map {
 		iterator	lower_bound (key_type const & k) {
 			iterator it = begin();
 			for (iterator ite = end(); it != ite; it++) {
-				if (!_comp(it->first, k))
+				if (it->first ==k || !_comp(it->first, k))
 					return it;
 			}
 			return end();
@@ -242,26 +255,26 @@ class map {
 		const_iterator	lower_bound (key_type const & k) const {
 			const_iterator it = begin();
 			for (const_iterator ite = end(); it != ite; it++) {
-				if (!_comp(it->first, k))
+				if (it->first == k || !_comp(it->first, k))
 					return it;
 			}
 			return end();
 		}
 
 		iterator	upper_bound (key_type const & k) {
-			reverse_iterator it = rbegin();
-			for (reverse_iterator ite = rend(); it != ite; it++) {
-				if (_comp(it->first, k))
-					it.base();
+			iterator it = begin();
+			for (iterator ite = end(); it != ite; it++) {
+				if (it->first != k && !_comp(it->first, k))
+					return it;
 			}
 			return end();
 		}
 		
 		const_iterator	upper_bound (key_type const & k) const {
-			const_reverse_iterator it = rbegin();
-			for (const_reverse_iterator ite = rend(); it != ite; it++) {
-				if (_comp(it->first, k))
-					it.base();
+			const_iterator it = begin();
+			for (const_iterator ite = end(); it != ite; it++) {
+				if (it->first != k && !_comp(it->first, k))
+					return it;
 			}
 			return end();
 		}

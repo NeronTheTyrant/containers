@@ -46,6 +46,7 @@ namespace ft {
 				color = rhs.color;
 				return *this;
 			};
+
 			static bool is_left_child(Node *node) {
 				return (!is_null_node(node->parent) && node->parent->left == node);
 			}

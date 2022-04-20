@@ -3,7 +3,7 @@
 
 #include "../temp.hpp"
 #include "rbtree.hpp"
-
+#include <iostream>
 namespace ft {
 
 template <class T, class Node = Node<T> >
@@ -24,7 +24,12 @@ class tree_iterator {
 		tree_iterator (tree_iterator const & src)
 			: _current(src._current), _root(src._root), _leaf(src._leaf) {}
 		tree_iterator (Node * current, Node * root)
-			: _current(current), _root(root), _leaf(root->parent) {}
+			: _current(current), _root(root) {
+			if (_root->parent == NULL)
+				_leaf = _root;
+			else
+				_leaf = _root->parent;
+		}
 
 		tree_iterator &	operator= (tree_iterator const & rhs) {
 			_current = rhs._current;
@@ -47,7 +52,9 @@ class tree_iterator {
 		}
 		
 		tree_iterator &	operator++ () {
-			if (_current->right != _leaf) {
+			if (_current == _leaf)
+				_current = min(_root);
+			else if (_current->right != _leaf) {
 				_current = min(_current->right);
 			}
 			else if (_current->parent != _leaf) {
@@ -71,7 +78,9 @@ class tree_iterator {
 		}
 
 		tree_iterator &	operator-- () {
-			if (_current->left != _leaf) {
+			if (_current == _leaf)
+				_current = max(_root);
+			else if (_current->left != _leaf) {
 				_current = max(_current->left);
 			}
 			else if (_current->parent != _leaf) {
@@ -109,6 +118,14 @@ class tree_iterator {
 		Node *	getCurrent () const {
 			return _current;
 		}
+
+		Node *	getRoot () const {
+			return _root;
+		}
+
+		Node * getLeaf () const {
+			return _leaf;
+		}
 };
 
 template <class T, class Node = Node<T> >
@@ -129,9 +146,14 @@ class tree_const_iterator {
 		tree_const_iterator (tree_const_iterator const & src)
 			: _current(src._current), _root(src._root), _leaf(src._leaf) {}
 		tree_const_iterator (tree_iterator<T, Node> const & src)
-			: _current(src._current), _root(src._root), _leaf(src._leaf) {}
+			: _current(src.getCurrent()), _root(src.getRoot()), _leaf(src.getLeaf()) {}
 		tree_const_iterator (Node * current, Node * root)
-			: _current(current), _root(root), _leaf(root->parent) {}
+			: _current(current), _root(root) {
+			if (_root->parent == NULL)
+				_leaf = _root;
+			else
+				_leaf = _root->parent;
+		}
 
 		tree_const_iterator &	operator= (tree_const_iterator const & rhs) {
 			_current = rhs._current;
@@ -154,13 +176,22 @@ class tree_const_iterator {
 		}
 		
 		tree_const_iterator &	operator++ () {
-			if (_current->right != _leaf) {
+			if (_current == _leaf)
+				_current = min(_root);
+			else if (_current->right != _leaf) {
 				_current = min(_current->right);
 			}
-			else if (_current == _current->parent->left)
-				_current = _current->parent;
-			else
+			else if (_current->parent != _leaf) {
+				while (_current->parent != _leaf && _current->parent->right == _current)
+					_current = _current->parent;
+				if (_current == _current->parent->left)
+					_current = _current->parent;
+				else
+					_current = _leaf;
+			}
+			else {
 				_current = _leaf;
+			}
 			return *this;
 		}
 
@@ -169,15 +200,24 @@ class tree_const_iterator {
 			operator++();
 			return tmp;
 		}
-
+		
 		tree_const_iterator &	operator-- () {
-			if (_current->left != _leaf) {
+			if (_current == _leaf)
+				_current = max(_root);
+			else if (_current->left != _leaf) {
 				_current = max(_current->left);
 			}
-			else if (_current == _current->parent->right)
-				_current = _current->parent;
-			else
+			else if (_current->parent != _leaf) {
+				while (_current->parent != _leaf && _current->parent->left == _current)
+					_current = _current->parent;
+				if (_current == _current->parent->right)
+					_current = _current->parent;
+				else
+					_current = _leaf;
+			}
+			else {
 				_current = _leaf;
+			}
 			return *this;
 		}
 
