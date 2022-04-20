@@ -310,6 +310,7 @@ class RBT {
 		void deleteNodeHelper (Node * z) {
 			Node *	y = z;
 			Node *	x;
+			Node *parent = z->parent;
 			bool y_color = getNodeColor(y);
 			if (z->left == _sentinel) {
 				std::cout << "we in! 1" << std::endl;
@@ -338,71 +339,85 @@ class RBT {
 //			ft::Node<value_type>::DG_tree(_root);
 			if (y_color == BLACK) {
 				std::cout << "we in! 2" << std::endl;
-				deleteFix(x);
+				Node *s;
+				if (parent == _sentinel)
+					std::cout << "huh??" << std::endl;
+				if (x == parent->left)
+					s = parent->right;
+				else
+					s = parent->left;
+				deleteFix(x, s, parent);
 			}
 			_size -= 1;
 			ft::Node<value_type>::DG_tree(_root);
 		}
 
-	void	deleteFix (Node * x) { // Called only when the deleted node was black.
-		Node *	s; // s will be x's sibling
-		while (x != _root && x != _sentinel && getNodeColor(x) == BLACK) {
-			if (x == x->parent->left) { // if x is a left child
-				s = x->parent->right;
+	void	deleteFix (Node * x, Node *s, Node *parent) { // Called only when the deleted node was black.
+	//	Node *	s; // s will be x's sibling
+		while (x != _root && getNodeColor(x) == BLACK) {
+			if (parent != _sentinel) {
+				if (s && s != _sentinel)
+					parent = s->parent;
+				if (x && x != _sentinel)
+					parent = x->parent;
+			}
+			if (x == parent->left) { // if x is a left child
+		//		s = x->parent->right;
 				if (getNodeColor(s) == RED) { // CASE 1
 					setNodeColor(s, BLACK); // sibling is now back
-					setNodeColor(x->parent, RED); // parent is now red
-					leftRotate(x->parent); // rotate parent
-					s = x->parent->right; // assign s to x's new sibling (since x's position changed)
+					setNodeColor(parent, RED); // parent is now red
+					leftRotate(parent); // rotate parent
+					s = parent->right; // assign s to x's new sibling (since x's position changed)
 				}
-				if (getNodeColor(s->left) == BLACK && getNodeColor(s->right) == BLACK) { // CASE 2
+				if (!s || (getNodeColor(s->left) == BLACK && getNodeColor(s->right) == BLACK)) { // CASE 2
 					setNodeColor(s, RED); // sibling is now red
-					x = x->parent; // move pointer to parent
+					x = parent;
 				}
 				else {
 					if (getNodeColor(s->right) == BLACK) { // CASE 3 - this might be a _sentinel
 						setNodeColor(s->left, BLACK); // sibling's left child becomes black. This may be a _sentinel.
 						setNodeColor(s, RED); // sibling becomes red
 						rightRotate(s);
-						s = x->parent->right; // since we moved sibling, assign to s x's current sibling
+						s = parent->right; // since we moved sibling, assign to s x's current sibling
 					}
 					// CASE 4
-					setNodeColor(s, getNodeColor(x->parent)); // sibling becomes the same color as its parent
-					setNodeColor(x->parent, BLACK); // x's parent becomes black
+					setNodeColor(s, getNodeColor(parent)); // sibling becomes the same color as its parent
+					setNodeColor(parent, BLACK); // x's parent becomes black
 					setNodeColor(s->right, BLACK); // sibling's child becomes black (may be _sentinel)
-					leftRotate(x->parent);
+					leftRotate(parent);
 					x = _root; // move x pointer to root, finishing the loop
 				}
 			}
 			else { // same as above, but left and right are flipped
-				s = x->parent->left;
+	//			s = x->parent->left;
 				if (getNodeColor(s) == RED) {
 					setNodeColor(s, BLACK);
-					setNodeColor(x->parent, RED);
-					rightRotate(x->parent);
-					s = x->parent->left;
+					setNodeColor(parent, RED);
+					rightRotate(parent);
+					s = parent->left;
 				}
 
-				if (getNodeColor(s->right) == BLACK && getNodeColor(s->left) == BLACK) {
+				if (!s || (getNodeColor(s->right) == BLACK && getNodeColor(s->left) == BLACK)) {
 					setNodeColor(s, RED);
-					x = x->parent;
+					x = parent;
 				}
 				else {
 					if (getNodeColor(s->left) == BLACK) {
 						setNodeColor(s->right, BLACK);
 						setNodeColor(s, RED);
 						leftRotate(s);
-						s = x->parent->left;
-						std::cout << "sentinel color is " << (_sentinel->color ? "RED" : "BLACK") << std::endl;
+						s = parent->left;
 					}
 
-					setNodeColor(s, getNodeColor(x->parent));
-					setNodeColor(x->parent, BLACK);
+					setNodeColor(s, getNodeColor(parent));
+					setNodeColor(parent, BLACK);
 					setNodeColor(s->left, BLACK);
-					rightRotate(x->parent);
+					rightRotate(parent);
 					x = _root;
 				}
 			}
+			if (x == _sentinel)
+				break;
 		}
 		setNodeColor(x, BLACK);
 	};
