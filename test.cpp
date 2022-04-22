@@ -1,6 +1,6 @@
 #include <list>
-#include "ft_algorithm.hpp"
-#include "map.hpp"
+#include "templates/ft_algorithm.hpp"
+#include "templates/map.hpp"
 #define T1 int
 #define T2 std::string
 typedef ft::pair<const T1, T2> T3;

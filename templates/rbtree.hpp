@@ -135,13 +135,13 @@ class RBT {
 		}
 
 		Node *	minimum(Node * node) const {
-			while (node->left != _sentinel)
+			while (node->left != _sentinel && node->left)
 				node = node->left;
 			return node;
 		}
 
 		Node *	maximum(Node * node) const {
-			while (node->right != _sentinel)
+			while (node->right != _sentinel && node->right)
 				node = node->right;
 			return node;
 		}
@@ -293,7 +293,7 @@ class RBT {
 					break;
 			}
 			setNodeColor(_root, BLACK); //							 case 0
-			ft::Node<value_type>::DG_tree(_root);
+//			ft::Node<value_type>::DG_tree(_root);
 		}
 
 
@@ -313,7 +313,6 @@ class RBT {
 			Node *parent = z->parent;
 			bool y_color = getNodeColor(y);
 			if (z->left == _sentinel) {
-				std::cout << "we in! 1" << std::endl;
 				x = z->right;
 				transplant(z, z->right);
 			}
@@ -323,13 +322,17 @@ class RBT {
 			}
 			else {
 				y = minimum(z->right);
+				parent = y->parent;
 				y_color = getNodeColor(y);
 				x = y->right;
 				if (y->parent != z) {
+					parent = y->parent;
 					transplant(y, y->right);
 					y->right = z->right;
 					y->right->parent = y;
 				}
+				else
+					parent = y;
 				transplant(z, y);
 				y->left = z->left;
 				y->left->parent = y;
@@ -338,31 +341,44 @@ class RBT {
 			delete z;
 //			ft::Node<value_type>::DG_tree(_root);
 			if (y_color == BLACK) {
+			/*
 				std::cout << "we in! 2" << std::endl;
 				Node *s;
-				if (parent == _sentinel)
-					std::cout << "huh??" << std::endl;
 				if (x == parent->left)
 					s = parent->right;
 				else
 					s = parent->left;
-				deleteFix(x, s, parent);
+				if (x != _sentinel && x != NULL)
+					std::cout << "x is :" << s->data.first << std::endl;
+				else if (s == _sentinel)
+					std::cout << "x is sentinel" << std::endl;
+				else
+					std::cout << "x is null" << std::endl;
+				if (s != _sentinel && s!= NULL)
+					std::cout << "sibling is :" << s->data.first << std::endl;
+				else if (s == _sentinel)
+					std::cout << "sibling is sentinel" << std::endl;
+				else
+					std::cout << "sibling is null" << std::endl;
+				if (parent != _sentinel && parent != NULL)
+					std::cout << "parent is :" << parent->data.first << std::endl;
+				else if (parent == _sentinel)
+					std::cout << "parent is sentinel" << std::endl;
+				else
+					std::cout << "parent is null" << std::endl;*/
+				deleteFix(x, parent);
 			}
 			_size -= 1;
-			ft::Node<value_type>::DG_tree(_root);
+	//		ft::Node<value_type>::DG_tree(_root);
 		}
 
-	void	deleteFix (Node * x, Node *s, Node *parent) { // Called only when the deleted node was black.
-	//	Node *	s; // s will be x's sibling
+	void	deleteFix (Node * x, Node *parent) { // Called only when the deleted node was black.
+		Node * s; // x's sibling
 		while (x != _root && getNodeColor(x) == BLACK) {
-			if (parent != _sentinel) {
-				if (s && s != _sentinel)
-					parent = s->parent;
-				if (x && x != _sentinel)
-					parent = x->parent;
-			}
+			if (x != _sentinel && x != NULL)
+				parent = x->parent;
 			if (x == parent->left) { // if x is a left child
-		//		s = x->parent->right;
+				s = parent->right;
 				if (getNodeColor(s) == RED) { // CASE 1
 					setNodeColor(s, BLACK); // sibling is now back
 					setNodeColor(parent, RED); // parent is now red
@@ -389,7 +405,7 @@ class RBT {
 				}
 			}
 			else { // same as above, but left and right are flipped
-	//			s = x->parent->left;
+				s = parent->left;
 				if (getNodeColor(s) == RED) {
 					setNodeColor(s, BLACK);
 					setNodeColor(parent, RED);
