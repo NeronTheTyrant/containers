@@ -1,37 +1,37 @@
 #ifndef RBTREE_HPP
 # define RBTREE_HPP
-#include "../temp.hpp"
 #include "tree_iterator.hpp"
+
+#define BLACK	0
+#define RED		1
 
 namespace ft {
 
-
-
-/*
-template <typename T>
+template<class T>
 class Node {
 	public:
-		typedef T	value_type;
+	typedef T	value_type;
 
-		value_type	data;
-		Node *		parent;
-		Node *		left;
-		Node *		right;
-		bool		color; // 0 is black, 1 is red
+	value_type	data;
+	Node *		parent;
+	Node *		left;
+	Node *		right;
+	bool		color; // 0 is black, 1 is red
 
-		Node() : parent(NULL), left(NULL), right(NULL) {};
-		Node(Node const & src) : parent(src.parent), left(src.left), right(src.left), color(src.color) {};
-		~Node() {};
+	Node() : parent(NULL), left(NULL), right(NULL) {};
+	Node(Node const & src)
+		: data(src.data), parent(src.parent), left(src.left), right(src.right), color(src.color) {};
+	~Node() {};
 
-		Node &	operator= (Node const & rhs) {
-			parent = rhs.parent;
-			left = rhs.left;
-			right = rhs.right;
-			color = rhs.color;
-			return *this;
-		};
+	Node &	operator= (Node const & rhs) {
+		parent = rhs.parent;
+		left = rhs.left;
+		right = rhs.right;
+		data = rhs.data;
+		color = rhs.color;
+		return *this;
 };
-*/
+
 template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
 class RBT {
 	public:
@@ -51,9 +51,6 @@ class RBT {
 		allocator_type		_alloc;
 		node_allocator_type	_nodeAlloc;
 		key_compare			_comp;
-	protected:
-//		#define BLACK	0
-//		#define RED		1
 	public:
 		RBT(key_compare const & compare = key_compare(),
 			allocator_type const & allocator = allocator_type())
@@ -158,6 +155,9 @@ class RBT {
 			deleteNodeHelper(it.getCurrent());
 		}
 
+		void deleteNode(const_iterator it) {
+			deleteNodeHelper(it.getCurrent());
+		}
 
 	private:
 		void	initSentinel() {
@@ -187,7 +187,6 @@ class RBT {
 			if (node->right && node->right != _sentinel)
 				clearHelper(node->right);
 			if (node != _sentinel) {
-				_alloc.destroy(&node->data);
 				_nodeAlloc.destroy(node);
 				_nodeAlloc.deallocate(node, 1);
 			}
@@ -293,7 +292,6 @@ class RBT {
 					break;
 			}
 			setNodeColor(_root, BLACK); //							 case 0
-//			ft::Node<value_type>::DG_tree(_root);
 		}
 
 
@@ -339,37 +337,10 @@ class RBT {
 				setNodeColor(y, getNodeColor(z));
 			}
 			delete z;
-//			ft::Node<value_type>::DG_tree(_root);
 			if (y_color == BLACK) {
-			/*
-				std::cout << "we in! 2" << std::endl;
-				Node *s;
-				if (x == parent->left)
-					s = parent->right;
-				else
-					s = parent->left;
-				if (x != _sentinel && x != NULL)
-					std::cout << "x is :" << s->data.first << std::endl;
-				else if (s == _sentinel)
-					std::cout << "x is sentinel" << std::endl;
-				else
-					std::cout << "x is null" << std::endl;
-				if (s != _sentinel && s!= NULL)
-					std::cout << "sibling is :" << s->data.first << std::endl;
-				else if (s == _sentinel)
-					std::cout << "sibling is sentinel" << std::endl;
-				else
-					std::cout << "sibling is null" << std::endl;
-				if (parent != _sentinel && parent != NULL)
-					std::cout << "parent is :" << parent->data.first << std::endl;
-				else if (parent == _sentinel)
-					std::cout << "parent is sentinel" << std::endl;
-				else
-					std::cout << "parent is null" << std::endl;*/
 				deleteFix(x, parent);
 			}
 			_size -= 1;
-	//		ft::Node<value_type>::DG_tree(_root);
 		}
 
 	void	deleteFix (Node * x, Node *parent) { // Called only when the deleted node was black.

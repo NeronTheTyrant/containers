@@ -1,9 +1,9 @@
 #ifndef TREE_ITERATOR_HPP
 # define TREE_ITERATOR_HPP
 
-#include "../temp.hpp"
 #include "rbtree.hpp"
 #include <iostream>
+
 namespace ft {
 
 template <class T, class Node = Node<T> >
