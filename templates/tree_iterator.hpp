@@ -2,6 +2,7 @@
 # define TREE_ITERATOR_HPP
 
 #include "rbtree.hpp"
+#include "node.hpp"
 #include <iostream>
 
 namespace ft {
