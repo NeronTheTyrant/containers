@@ -1,36 +1,12 @@
 #ifndef RBTREE_HPP
 # define RBTREE_HPP
 #include "tree_iterator.hpp"
+#include "node.hpp"
 
 #define BLACK	0
 #define RED		1
 
 namespace ft {
-
-template<class T>
-class Node {
-	public:
-	typedef T	value_type;
-
-	value_type	data;
-	Node *		parent;
-	Node *		left;
-	Node *		right;
-	bool		color; // 0 is black, 1 is red
-
-	Node() : parent(NULL), left(NULL), right(NULL) {};
-	Node(Node const & src)
-		: data(src.data), parent(src.parent), left(src.left), right(src.right), color(src.color) {};
-	~Node() {};
-
-	Node &	operator= (Node const & rhs) {
-		parent = rhs.parent;
-		left = rhs.left;
-		right = rhs.right;
-		data = rhs.data;
-		color = rhs.color;
-		return *this;
-};
 
 template <class T, class Compare = std::less<T>, class Alloc = std::allocator<T> >
 class RBT {
