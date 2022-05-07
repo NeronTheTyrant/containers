@@ -312,7 +312,8 @@ class RBT {
 				y->left->parent = y;
 				setNodeColor(y, getNodeColor(z));
 			}
-			delete z;
+			_nodeAlloc.destroy(z);
+			_nodeAlloc.deallocate(z, 1);
 			if (y_color == BLACK) {
 				deleteFix(x, parent);
 			}
