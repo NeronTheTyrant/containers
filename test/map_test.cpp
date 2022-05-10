@@ -3,12 +3,9 @@
 #include <string>
 #ifndef FT
 # include <map>
-# include <stack>
-# include <map>
-# include <set>
 namespace ft = std;
 #else
-# include "templates/map.hpp"
+# include "../templates/map.hpp"
 #endif
 
 #include <stdlib.h>
@@ -65,7 +62,9 @@ int	main (void) {
 		std::cout << "m != m2" << std::endl;
 	std::cout << "m3.empty(): " << m3.empty() << std::endl;
 	map<int, int>::key_compare kc = m3.key_comp(); // key_comp
+	(void)kc;
 	map<int, int>::value_compare vc = m3.value_comp(); // value_comp
+	(void)vc;
 	std::cout << m2.count(256) << m2.count(215864) << m2.count(-1) << std::endl; // count
 	std::cout << m2.lower_bound(-8)->second << " " << m2.upper_bound(-8)->second << std::endl;
 	pair<map<int, int>::iterator, map<int, int>::iterator > p = m2.equal_range(-8);

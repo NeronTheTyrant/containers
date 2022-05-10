@@ -3,12 +3,9 @@
 #include <string>
 #ifndef FT
 # include <set>
-# include <stack>
-# include <set>
-# include <set>
 namespace ft = std;
 #else
-# include "templates/set.hpp"
+# include "../templates/set.hpp"
 #endif
 
 #include <stdlib.h>
@@ -63,7 +60,9 @@ int	main (void) {
 		std::cout << "s != s2" << std::endl;
 	std::cout << "s3.empty(): " << s3.empty() << std::endl;
 	set<int>::key_compare kc = s3.key_comp(); // key_comp
+	(void)kc;
 	set<int>::value_compare vc = s3.value_comp(); // value_comp
+	(void)vc;
 	std::cout << s2.count(256) << s2.count(215864) << s2.count(-1) << std::endl; // count
 	std::cout << *s2.lower_bound(-8) << " " << *s2.upper_bound(-8) << std::endl;
 	pair<set<int>::iterator, set<int>::iterator > p = s2.equal_range(-8);

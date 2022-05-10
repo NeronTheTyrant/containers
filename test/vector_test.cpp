@@ -1,13 +1,10 @@
 #include <iostream>
 #include <string>
 #ifndef FT
-# include <map>
-# include <stack>
 # include <vector>
-# include <set>
 namespace ft = std;
 #else
-# include "templates/vector.hpp"
+# include "../templates/vector.hpp"
 #endif
 
 #include <stdlib.h>
